@@ -6,15 +6,20 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
-  security-events: write  # for SARIF upload
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      pull-requests: write
+      security-events: write  # for SARIF upload
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
       - name: pipeline-check
         uses: dmartinochoa/pipeline-check@1df5e768503c886134c70fb517f3234dbfc43aab
 ...
