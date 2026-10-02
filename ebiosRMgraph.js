@@ -4544,7 +4544,7 @@ function at1a_newppl() {
   if (!newname) return;
 
 
-  var uid = Math.random().toString(36).slice(2) //self.crypto.randomUUID();
+  var uid = self.crypto.randomUUID();
 
 
 
