@@ -56,7 +56,7 @@ function esc(str){
 // Validation de chaîne (longueur max, caractères autorisés)
 function sanitizeStr(str,maxLen=500){
     if(typeof str!=='string')return '';
-    return str.substring(0,maxLen).replace(/[<>]/g,'');
+    return str.substring(0,maxLen).replace(/[&<>"']/g,'');
 }
 
 // Validation d'un nombre dans une plage
@@ -422,7 +422,7 @@ ${Object.entries(BDC.echelles).map(([k,v])=>`<div><span class="text-cyan-400 fon
 </div>
 
 <div class="grid lg:grid-cols-2 gap-4">
-<div class="table-container">${D.pp.length?`<table><thead><tr><th>ID</th><th>PP</th><th>Cat.</th><th>D</th><th>P</th><th>M</th><th>C</th><th>Menace</th><th>Zone</th><th></th></tr></thead><tbody>${D.pp.map((p,i)=>{const t=((p.d*p.p)/(p.m*p.c)).toFixed(2);const z=t<1?{n:'Veille',c:'#22c55e'}:t<2?{n:'Contrôle',c:'#eab308'}:{n:'Danger',c:'#dc2626'};return `<tr><td class="text-purple-400 font-mono font-bold">PP${i+1}</td><td class="text-white">${esc(p.name)}</td><td class="text-white text-xs">${p.cat}</td><td class="text-center" style="color:${getLvlColor(p.d)}">${p.d}</td><td class="text-center" style="color:${getLvlColor(p.p)}">${p.p}</td><td class="text-center" style="color:${getLvlColor(p.m)}">${p.m}</td><td class="text-center" style="color:${getLvlColor(p.c)}">${p.c}</td><td class="text-center font-bold">${t}</td><td class="text-center"><span class="badge" style="background:${z.c}30;color:${z.c}">${z.n}</span></td><td><button onclick="editPP(${p.id})" class="text-blue-400 mr-1">✏️</button><button onclick="delPP(${p.id})" class="text-red-400">🗑️</button></td></tr>`;}).join('')}</tbody></table>`:'<div class="p-6 text-center text-slate-500">Aucune PP</div>'}</div>
+<div class="table-container">${D.pp.length?`<table><thead><tr><th>ID</th><th>PP</th><th>Cat.</th><th>D</th><th>P</th><th>M</th><th>C</th><th>Menace</th><th>Zone</th><th></th></tr></thead><tbody>${D.pp.map((p,i)=>{const t=((p.d*p.p)/(p.m*p.c)).toFixed(2);const z=t<1?{n:'Veille',c:'#22c55e'}:t<2?{n:'Contrôle',c:'#eab308'}:{n:'Danger',c:'#dc2626'};const safeId=Number.isFinite(Number(p.id))?Number(p.id):0;return `<tr><td class="text-purple-400 font-mono font-bold">PP${i+1}</td><td class="text-white">${esc(p.name)}</td><td class="text-white text-xs">${p.cat}</td><td class="text-center" style="color:${getLvlColor(p.d)}">${p.d}</td><td class="text-center" style="color:${getLvlColor(p.p)}">${p.p}</td><td class="text-center" style="color:${getLvlColor(p.m)}">${p.m}</td><td class="text-center" style="color:${getLvlColor(p.c)}">${p.c}</td><td class="text-center font-bold">${t}</td><td class="text-center"><span class="badge" style="background:${z.c}30;color:${z.c}">${z.n}</span></td><td><button onclick="editPP(${safeId})" class="text-blue-400 mr-1">✏️</button><button onclick="delPP(${safeId})" class="text-red-400">🗑️</button></td></tr>`;}).join('')}</tbody></table>`:'<div class="p-6 text-center text-slate-500">Aucune PP</div>'}</div>
 <div class="bg-slate-900/50 rounded-lg p-4"><h4 class="text-white text-sm font-bold mb-2 text-center">Radar Écosystème</h4><div id="radarBox" class="radar-container"></div></div>
 </div>
 </section>
