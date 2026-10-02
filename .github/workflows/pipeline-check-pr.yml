@@ -1,0 +1,23 @@
+---
+name: pipeline-check (security compliance)
+on:
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write  # for SARIF upload
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: pipeline-check
+        uses: dmartinochoa/pipeline-check@1df5e768503c886134c70fb517f3234dbfc43aab
+        with:
+          pr-comment: 'true'          # default on pull_request events
+          comment-mode: per-finding   # or 'summary'
+...
