@@ -321,7 +321,7 @@ ${D.customSources.includes(s)?`<button onclick="delSource('${s.replace(/'/g,"\\'
 <div class="bg-slate-900/50 rounded-lg p-2 max-h-48 overflow-y-auto">
 ${allObjectifs.map((o,i)=>`<div class="flex items-center justify-between py-1 px-2 hover:bg-slate-800 rounded">
 <span class="text-white text-sm"><span class="text-purple-400 font-mono font-bold mr-2">OV${i+1}</span>${o}</span>
-${D.objectifsVises.includes(o)?`<button onclick="delObjectif('${o.replace(/'/g,"\\'")}')" class="text-red-400 text-xs hover:text-red-300">🗑️</button>`:'<span class="text-slate-600 text-xs">prédéfini</span>'}
+${D.objectifsVises.includes(o)?`<button onclick="delObjectif('${o.replace(/\\/g,"\\\\").replace(/'/g,"\\'")}')" class="text-red-400 text-xs hover:text-red-300">🗑️</button>`:'<span class="text-slate-600 text-xs">prédéfini</span>'}
 </div>`).join('')}
 </div>
 </section>
