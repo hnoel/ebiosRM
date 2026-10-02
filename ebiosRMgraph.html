@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,shrink-to-fit=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self';">
+  <title>EBIOS RM Graph</title>
+  <link rel="stylesheet" type="text/css" href="./ebiosRMgraph.css" media="all" />
+</head>
+
+<body onload="go()">
+
+	<div id="divgrey" onclick="hide_divgrey()"></div>
+	<div id="divover">divover</div>
+	<div id="divover_risk">divover</div>
+	<div id="divmenuover"></div>
+
+	<div id="layout" style="display: flex;  width: 100%;">
+
+	<div id="layout-sidebar" style="">
+
+	<br/>
+
+
+	&nbsp; <button onclick="saveJSON(1)" type="button" style="width:100px"><span style="filter: grayscale(100%);">&#128190;</span> Enregistrer </button>
+
+	<i class="iconshare" onclick="clickiconshare()">
+		<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round">
+		<line x1="6" y1="12" x2="18" y2="5"/>
+		<line x1="6" y1="12" x2="18" y2="19"/>
+		<circle cx="18" cy="5" r="3" fill="#000" stroke="none"/>
+		<circle cx="6" cy="12" r="3" fill="#000" stroke="none"/>
+		<circle cx="18" cy="19" r="3" fill="#000" stroke="none"/>
+		</svg>
+		</i>
+
+		<br/>
+		&nbsp; <button onclick="loadJSON(1)" type="button" style="width:100px;text-align:left"><span style="filter: grayscale(100%);">&#128194;</span> Ouvrir </button><br/>
+
+		<br/>
+		<br/>
+
+		<div id="atelier1" onmousedown="clickmenu(this)"><div class="mini at1bg disabled">1</div>Cadrage</div>
+		<div class="atelier1open submenu startscript" onmousedown="showatt('at1a',this)"><div class="mini at1bg ">A</div>Cadre de l'étude</div>
+		<div class="at1bc atelier1open submenu" onmousedown="showatt('at1bc',this)"><div class="mini at1bg">B</div>Périmètre</div>
+		<div class="at1bc atelier1open submenu" onmousedown="showatt('at1bc',this)"><div class="mini at1bg">C</div>Événements redoutés</div>
+		<div class="atelier1open submenu" onmousedown="showatt('at1d',this)"><div class="mini at1bg">D</div>Socle de sécurité</div>
+
+		<div id="atelier2" onmousedown="clickmenu(this)"><div class="mini at2bg">2</div>Source de risque</div>
+		<div class="atelier2open submenu" onmousedown="showatt('at2abc',this)"><div class="mini at2bg">A</div>Identification</div>
+		<div class="atelier2open submenu" onmousedown="showatt('at2abc',this)"><div class="mini at2bg">B</div>Pertinence</div>
+		<div class="atelier2open submenu" onmousedown="showatt('at2abc',this)"><div class="mini at2bg">C</div>Rétention</div>
+
+		<div id="atelier3" onmousedown="clickmenu(this)"><div class="mini at3bg">3</div>Scénarios stratégiques</div>
+		<div class="atelier3open submenu" onmousedown="showatt('at3a',this)"><div class="mini at3bg">A</div>Cartographie</div>
+		<div class="atelier3open submenu" onmousedown="showatt('at3b',this)"><div class="mini at3bg">B</div>Scénario</div>
+		<div class="atelier3open submenu" onmousedown="showatt('at3c',this)"><div class="mini at3bg">C</div>Mesures de sécurité</div>
+
+
+		<div id="atelier4" onmousedown="clickmenu(this)"><div class="mini at4bg">4</div>Scénarios opérationnels</div>
+		<div class="atelier4open submenu" onmousedown="showatt('at4ab',this)"><div class="mini at4bg">A</div>Scénarios</div>
+		<div class="atelier4open submenu" onmousedown="showatt('at4ab',this)"><div class="mini at4bg">B</div>Vraisemblance</div>
+
+		<div id="atelier5" onmousedown="clickmenu(this)"><div class="mini at5bg">5</div>Traitement du risque</div>
+		<div class="at5abcd submenu" onmousedown="showatt('at5abcd',this)"><div class="mini at5bg">A</div>Synthèse</div>
+		<div class="at5abcd submenu" onmousedown="showatt('at5abcd',this)"><div class="mini at5bg">B</div>Stratégie</div>
+		<div class="at5abcd submenu" onmousedown="showatt('at5abcd',this)"><div class="mini at5bg">C</div>Mesures de sécurité</div>
+		<div class="at5abcd submenu" onmousedown="showatt('at5abcd',this)"><div class="mini at5bg">D</div>Risques résiduels</div>
+		<div class="at5ef submenu disabled" onmousedown="showatt('at5ef',this)"><div class="mini at5bg">E</div>Suivi</div>
+		<div class="at5ef submenu disabled" onmousedown="showatt('at5ef',this)"><div class="mini at5bg">F</div>Surveillance</div>
+		</div>
+
+		<div id="layout_content" style="margin-left:220px;width: 100vw;padding-left: 20px;">
+
+		<div id="at1a">
+
+		<br/>
+		<br/>
+		<span class="big at1bg">1.A</span><span style="border-bottom:#FED6EB solid 3px;">Cadrage de l'étude</span>
+		<br/><br/><br/>
+
+
+		<div id="at1a_maindiv" >
+
+		<table style="width:600px">
+		<tr><td>Organisation</td><td><input id="at1a_org" type="text" style="width: 300px;float:right;"/></td></tr>
+		<tr><td>Nom de l'etude</td><td><input id="at1a_nom"  type="text" style="width: 300px;float:right;"/></td></tr>
+		<tr><td>Date</td><td><input id="at1a_date" type="date" style="float:right;"/></td></tr>
+		<tr><td>Version</td><td><input id="at1a_ver" type="text" style="width: 50px;float:right;"/></td></tr>
+		<tr><td>Notes</td><td></td></tr>
+		<tr><td colspan="2"><textarea id="at1a_notes" style="width: 100%;height:100px;"></textarea></td></tr>
+		</table>
+
+
+		<br/>Participants :<br/><br/>
+		<table id="at1a_raci" style="" onclick="at1a_RACIclick(event)">
+
+		<tr  class="noclick"><td style="">Atelier</td><td style="width:210px">Réalisateur</td><td style="width:210px">Approbateur</td><td style="width:210px">Consulté</td><td style="width:210px">Informé</td></tr>
+		<tr class="at1" style="background-color:var(--colorlight)"><td class="at1bg noclick">1</td><td></td><td></td><td></td><td></td></tr>
+		<tr class="at2" style="background-color:var(--colorlight)"><td class="at2bg noclick">2</td><td></td><td></td><td></td><td></td></tr>
+		<tr class="at3" style="background-color:var(--colorlight)"><td class="at3bg noclick">3</td><td></td><td></td><td></td><td></td></tr>
+		<tr class="at4" style="background-color:var(--colorlight)"><td class="at4bg noclick">4</td><td></td><td></td><td></td><td></td></tr>
+		<tr class="at5" style="background-color:var(--colorlight)"><td class="at5bg noclick">5</td><td></td><td></td><td></td><td></td></tr>
+		</table>
+		</div>
+
+		</div>
+
+		<div id="at1bc">
+
+		<br/>
+		<br/>
+
+		<span class="big at1bg">1.B</span><span style="border-bottom:#FED6EB solid 3px;">Périmètre métier et technique</span>
+		<br/>
+		<br/>
+
+		<button onclick="at1b_popupnewsmetier()" style="padding:8px 16px;margin: 16px;">Ajouter valeur métier</button>
+		<div class="info-wrapper">
+		  <span class="info-icon">i</span>
+		  <div class="info-wrapper-tooltip">5 à 10 valeurs métier constituent généralement une base suffisante.</div>
+		  </div>
+		  <br/>
+		<table id='at1b_table' style="min-width:350px;">
+			<tr style='color:#FB45A3'>
+				<td style="background:#fff;width:22px;"></td>
+				<td class='at1c_tableheader'>Valeur métier</td>
+			</tr>
+		</table>
+
+		<br/>
+		<br/><br/>
+		<br/>
+
+		<br/>
+		<br/>
+		<span class="big at1bg">1.C</span><span style="border-bottom:#FED6EB solid 3px;">Identification des événements redoutés</span>
+		<br/><br/><br/>
+
+
+		<div id="at21c_maindiv" style="width:800px">
+
+		<table id='at1c_table' style="width:100%;display: inline-block;"><tr style='color:#FB45A3'>
+		<td style="background:#fff;"></td>
+		<td class='at1c_tableheader'>Valeur métier</td>
+		<td class='at1c_tableheader'>Evènement redouté</td>
+		<td class='at1c_tableheader'>Impacts</td>
+		<td class='at1c_tableheader'>Gravité</td>
+		</tr></table>
+
+		</div>
+
+		</div>
+
+
+		<div id="at1d" data-socles='["Guide hygiène ANSSI","ISO27001","ISO27005","NIS2","RGPD"]'>
+
+		<br/>
+		<br/>
+		<span class="big at1bg">1.D</span><span style="border-bottom:#FED6EB solid 3px;">Socle de sécurité</span>
+		<br/><br/>
+
+		<button onclick="at1d_new()" style="padding:8px 16px;margin: 16px;">Ajouter un socle</button>
+		<br/><br/>
+
+
+		<div id="at1d_soclediv" style="width:800px">
+
+		</div>
+
+		</div>
+
+
+
+		<div id="at2abc">
+		<br/>
+		<br/>
+
+		<span class="big at2bg">2.A</span><span style="border-bottom:var(--colorlight) solid 3px;">Identification des SR/OV : <b>S</b>ources de <b>R</b>isque et <b>O</b>bjectifs <b>V</b>isés</span>
+		<br/><br/><br/>
+		<button onclick="at2a_newsrov()" style="padding:8px 16px;margin: 16px;">Ajouter SR/OV</button><br/>
+
+		<br/>
+		<span class="big at2bg">2.B</span><span style="border-bottom:#E2D3E0 solid 3px;">Évaluation de la pertinence des SR/OV</span> &nbsp; <div class="info-wrapper">
+		  <span class="info-icon">i</span>
+		  <div class="info-wrapper-tooltip">3 à 6 couples SR/OV constituent<br/>généralement une base suffisante.</div>
+		</div>
+		<br/><br/>
+
+		<table id="at2b_srovlist" style="width:1200px;border: 2px solid #E2D3E0;border-collapse:collapse;margin: 8px;">
+		<tr style='background-color:#E2D3E0'><td></td><td></td><td width="130px">Source de Risque</td><td></td><td>Objectif Visés</td><td style="width:180px;"></td><td>Pertinence</td><td>Retenu</td><td>Justification</td></tr>
+		</table>
+
+
+		<br/>
+		<div style="text-align:center;">
+		<svg id="at2b_svg1" width="350" height="350" viewBox="-250 -250 500 500" xmlns="http://www.w3.org/2000/svg" style="background-color:#CFD6D5">
+		  
+		  <circle id="at2b_svg1_bluecircle" cx="0" cy="0" r="15" fill="#443EA0" />
+		  <!-- Cercle de fond -->
+		  <circle cx="0" cy="0" r="50" fill="none" stroke="#999" />
+		  <circle cx="0" cy="0" r="100" fill="none" stroke="#999" /> 
+		  <circle cx="0" cy="0" r="150" fill="none" stroke="#999" />
+		  <circle cx="0" cy="0" r="200" fill="none" stroke="#999" />
+		  
+
+			
+		  <!-- fleche -->
+		  <line x1="25" y1="25" x2="170" y2="170" stroke="#333" stroke-width="1.5"/>
+		  <polygon points="18,18 35,25 25,35" fill="black" />
+		  
+		  
+		  
+		  <!-- 1,2,3,4,5 -->
+		  <text x="55" y="40" text-anchor="middle" font-size="16">4</text>
+		  <text x="90" y="75" text-anchor="middle" font-size="16">3</text>
+		  <text x="127" y="110" text-anchor="middle" font-size="16">2</text>
+		  <text x="162" y="145" text-anchor="middle" font-size="16">1</text>
+		  
+		  <text x="-235" y="-230" font-size="22" style="fill:#002742">Vision par sources de risques</text>
+		  <circle cx="220" cy="225" r="18" fill="#FF3824" />
+		  <text x="195" y="233" text-anchor="end" font-size="18" style="fill:#002742">SR/OV retenu</text>
+		</svg>
+
+		<svg id="at2b_svg2" width="350" height="350" viewBox="-250 -250 500 500" xmlns="http://www.w3.org/2000/svg" style="background-color:#CFF1F3">
+		  
+		  <circle id="at2b_svg2_bluecircle" cx="0" cy="0" r="15" fill="#443EA0" />
+		  <!-- Cercle de fond -->
+		  <circle cx="0" cy="0" r="50" fill="none" stroke="#999" />
+		  <circle cx="0" cy="0" r="100" fill="none" stroke="#999" /> 
+		  <circle cx="0" cy="0" r="150" fill="none" stroke="#999" />
+		  <circle cx="0" cy="0" r="200" fill="none" stroke="#999" />
+		  
+
+			
+		  <!-- fleche -->
+		  <line x1="25" y1="25" x2="170" y2="170" stroke="#333" stroke-width="1.5"/>
+		  <polygon points="18,18 35,25 25,35" fill="black" />
+		  
+		  
+		  
+		  <!-- 1,2,3,4,5 -->
+		  <text x="55" y="40" text-anchor="middle" font-size="16">4</text>
+		  <text x="90" y="75" text-anchor="middle" font-size="16">3</text>
+		  <text x="127" y="110" text-anchor="middle" font-size="16">2</text>
+		  <text x="162" y="145" text-anchor="middle" font-size="16">1</text>
+
+		  <text x="-235" y="-230" font-size="22" style="fill:#002742">Vision par objectifs visés</text>
+		  <circle cx="-220" cy="225" r="18" fill="#89C06D" />
+		  <text x="-190" y="233" font-size="18" style="fill:#002742">SR/OV non retenu</text>
+
+		</svg>
+		</div>
+
+		<br/>
+		<br/>
+		<span class="big at2bg">2.C</span><span style="border-bottom:#E2D3E0 solid 3px;">SR/OV retenus pour la suite de l’analyse</span>
+		<br/>
+		<br/>
+		<table id="at2c_srovlist" class="" style="width:1200px;border: 2px solid #E2D3E0;border-collapse:collapse;margin: 8px;">
+		<tr style="background-color:#E2D3E0"><td style="width:130px;text-align:left">Source de Risque</td><td style="text-align:left;">Objectif Visés</td><td style="text-align:left;">Événements redoutés</td></tr>
+		</table>
+		<div id="at2c_nosrov">Aucun SR/OV retenu dans l'atelier 2.B</div>
+
+		<br/>
+		<br/>
+
+		</div>
+
+
+
+
+		<div id="at3a">
+		<br/>
+		<br/>
+		<span class="big at3bg">3.A</span><span style="border-bottom:#CCEDEC solid 3px;">Cartographie de dangerosité de l’écosystème et identification des parties prenantes critiques</span>
+		<br/><br/><br/>
+
+
+		<div id="div_menace" style="padding:4px;">
+
+		<div style="width:100%;font-size:larger;color:#fff;background-color:#251B36;padding: 6px 0;border-radius:6px;text-align:center;">Exposition <span id='calcexpotext'>AAA</span></div>
+		<table style="width:100%;border-collapse: collapse;">
+		<tr><td style="width:200px">
+		<div style="background-color:#A5C6EE;border-radius:4px;padding:4px;margin-top: 4px;">
+		<center>Dépendance</center>
+		<p>La relation avec <span class='div_menacepptext'></span> est-elle vitale pour mon activité ?</p>
+		</div>
+		</td>
+		<td style="text-align: center;">
+		<select name="dep" id="dep" style="max-width:300px" onchange="calcexpo()">
+		<option value="1">1 - Relation non nécessaire aux fonctions stratégiques.</option>
+		<option value="2">2 - Relation utile aux fonctions stratégiques</option>
+		<option value="3">3 - Relation indispensable mais non exclusive.</option>
+		<option value="4">4 - Relation indispensable et unique (pas de substitution possible à court terme)</option>
+		</select>
+		</td>
+		</tr>
+		<tr><td>
+		<div style="background-color:#A5C6EE;border-radius:4px;padding:4px;margin-top: 4px;">
+		<center>Pénétration</center>
+		<p>Quels sont les accès de <span class='div_menacepptext'></span> aux ressources internes ?</p>
+		</div>
+		</td>
+		<td style="text-align: center;">
+		<select name="pen" id="pen" style="max-width:300px" onchange="calcexpo()">
+		<option value="1">1 - Pas d’accès ou accès utilisateur aux terminaux (poste de travail, téléphone mobile...).</option>
+		<option value="2">2 - Accès administrateur aux terminaux (parc informatique, flotte de terminaux mobiles...)
+		ou accès physique aux sites de l’organisation.</option>
+		<option value="3">3 - Accès administrateur aux serveurs « métier » (serveur de fichiers, bases
+		de données, serveur web, serveur d’application...).</option>
+		<option value="4">4 - Accès administrateur à l’infrastructure (annuaires, DNS, DHCP, switchs, pare-feu, hyperviseurs, baies de stockage...) ou accès physique aux salles serveurs de l’organisation.</option>
+		</select></td>
+		</tr>
+		</table>
+
+
+		<br/>
+		<div style="width:100%;font-size:larger;color:#fff;background-color:#251B36;padding: 6px 0;border-radius:6px;text-align:center;">Fiabilité cyber<span id='calcfiabtext'>BBB</span></div>
+		<table style="width:100%;border-collapse: collapse;">
+		<tr><td style="width:200px">
+		<div style="background-color:#A5C6EE;border-radius:4px;padding:4px;margin-top: 4px;">
+		<center>Maturité cyber</center>
+		<p>Efficacité de <span class='div_menacepptext'></span> en matière de sécurité ?</p>
+		</div>
+		</td>
+		<td style="text-align: center;">
+		<select name="mat" id="mat" style="max-width:300px" onchange="calcfiab()">
+		<option value="1">1 - Incertaine : Des règles d’hygiène informatique sont appliquées ponctuellement et non formalisées.</option>
+		<option value="2">2 - Réactive : Les règles d’hygiène et la réglementation sont prises en compte, sans intégration dans une politique globale.</option>
+		<option value="3">3 - Réactive + anticipation + centralisation : Une politique globale est appliquée en matière de sécurité numérique.</option>
+		<option value="4">4 - Proactive : La partie prenante met en œuvre une politique de management du risque.</option>
+		</select>
+		</td>
+		</tr>
+		<tr><td>
+		<div style="background-color:#A5C6EE;border-radius:4px;padding:4px;;margin-top: 4px;">
+		<center>Confiance</center>
+		<p>Les intentions ou les intérets de <span class='div_menacepptext'></span> peuvent m'être contraires ?</p>
+		</div>
+		</td>
+		<td style="text-align: center;">
+		<select name="conf" id="conf" style="max-width:300px" onchange="calcfiab()">
+		<option value="1">1 - Les intentions ne peuvent être évaluées.</option>
+		<option value="2">2 - Les intentions sont considérées comme neutres.</option>
+		<option value="3">3 - Les intentions sont connues et probablement positives.</option>
+		<option value="4">4 - Les intentions sont parfaitement connues et pleinement compatibles avec celles de l’organisation étudiée.</option>
+		</select></td>
+		</tr>
+		</table>
+
+		<br/><center><button onclick="menaceok()" style="padding:8px 16px">OK</button></center><br/><br/>
+
+
+		<center>
+		<div style="text-align:center;width: 280px;  padding: 16px;  border-radius: 8px;background-color:#9FA9ED;line-height: 20px;  font-size: larger;">
+		<bold>Niveau de menace</bold><br/>
+		=<br/>
+		<u>Dépendance x Pénétration</u><br/>
+		Maturité cyber x Confiance
+		</div>
+		</center>
+		<br/>
+		</div>
+
+
+		<div id="cont_at3a" style="float:left;">
+		<button onclick="seuil()" style="height:24px;cursor:pointer;margin:8px;"> Seuil </button><button id="butnewcat" onclick="at3a_newcat()" style="height:24px;cursor:pointer;margin:8px;"> + Catégorie </button><br/>
+
+
+
+		<div id="divseuil" style="display:none;width:310px;margin-left:8px;">
+
+		<table>
+		<tr><td><div style="width:22px;height:22px;border:4px solid #00A7A2;border-radius:18px;"></div></td><td>Veille</td><td>		<input id="seuil1" type="number" value="0.2" min=0 max=6 step=".1"onchange="chinput(this);at3a_redraw_graph()"></td></tr>
+		<tr><td><div style="width:19px;height:19px;border:4px solid #F6E742;border-radius:18px;margin-left:1px;"></div><div></div></td><td>Contrôle</td><td>	<input id="seuil2" type="number" value="0.9" min=0 max=6 step=".1"onchange="chinput(this);at3a_redraw_graph()"></td></tr>
+		<tr><td><div style="width:16px;height:16px;border:4px solid #E3394A;border-radius:18px;margin-left:3px;"></div><div></div></td><td>Danger</td><td>		<input id="seuil3" type="number" value="2.5" min=0 max=6 step=".1" onchange="chinput(this);at3a_redraw_graph()"></td></tr>
+		</table>
+		</div>
+
+
+
+
+
+		<div class="listblock"></div><br/>
+		</div>
+		<div  style='float:right'>
+		<svg id="at3a_svg" width="680" height="900" viewBox="-340 -340 680 900" xmlns="http://www.w3.org/2000/svg">
+		  
+		  
+		  <!-- Axes -->
+		  <line x1="0" y1="300" x2="0" y2="-300" stroke="#ccc"/>
+		  <line x1="-300" y1="0" x2="300" y2="0" stroke="#ccc"/>
+		  
+		  <!-- Cercle de fond -->
+		  <circle cx="0" cy="0" r="50" fill="none" stroke="#ccc" />
+		  <circle cx="0" cy="0" r="100" fill="none" stroke="#ccc" /> 
+		  <circle cx="0" cy="0" r="150" fill="none" stroke="#ccc" />
+		  <circle cx="0" cy="0" r="200" fill="none" stroke="#ccc" />
+		  <circle cx="0" cy="0" r="250" fill="none" stroke="#ccc" />
+		  <circle cx="0" cy="0" r="300" fill="none" stroke="#ccc" />
+		  
+		  <circle id="bluecircle" cx="0" cy="0" r="15" fill="#39B0F0" />
+			
+			
+			  
+		  <!-- fleche -->
+		  <line x1="25" y1="25" x2="240" y2="240" stroke="#333" stroke-width="1.5"/>
+		  <polygon points="18,18 35,25 25,35" fill="black" />
+		  
+		  
+		  
+		  <!-- 1,2,3,4,5 -->
+		  <text x="53" y="40" text-anchor="middle" font-size="16">5</text>
+		  <text x="88" y="75" text-anchor="middle" font-size="16">4</text>
+		  <text x="125" y="110" text-anchor="middle" font-size="16">3</text>
+		  <text x="160" y="145" text-anchor="middle" font-size="16">2</text>
+		  <text x="196" y="182" text-anchor="middle" font-size="16">1</text>
+		  <text x="233" y="220" text-anchor="middle" font-size="16">0</text>
+		  
+		  
+		  
+		  
+		  
+		  <line x1="-280" y1="350" x2="280" y2="350" stroke="#4A6679" stroke-width="1"/>
+		  
+		  <text x="-205" y="375" font-size="14">Zone de veille</text>
+		  <text x="-40" y="375" font-size="14">Zone de controle</text>
+		  <text x="140" y="375" font-size="14">Zone de danger</text>
+		  
+		  <text id="svg_seuil1" x="-205" y="391" font-size="12">Seuil X</text>
+		  <text id="svg_seuil2" x="-40" y="391" font-size="12">Seuil Y</text>
+		  <text id="svg_seuil3" x="140" y="391" font-size="12">Seuil Z</text>
+		  
+		  <circle cx="-230" cy="378" r="16" fill="none" stroke="#2CB1AD" stroke-width="3"/>
+		  <circle cx="-65" cy="378" r="16" fill="none" stroke="#F6E742" stroke-width="3"/>
+		  <circle cx="115" cy="378" r="16" fill="none" stroke="#E8606E" stroke-width="3"/>
+		  
+		  
+		  
+		  <line x1="-280" y1="406" x2="280" y2="406" stroke="#4A6679" stroke-width="1"/>
+		  <text x="-70" y="450" text-anchor="end" font-size="14">Exposition</text>
+		  
+		  <circle cx="-40" cy="442" r="10" fill="#ddd"/>
+		  <circle cx="0" cy="440" r="13" fill="#ddd"/> 
+		  <circle cx="40" cy="438" r="16" fill="#ddd"/>
+		  <circle cx="85" cy="435" r="20" fill="#ddd"/>
+		  
+		  <text x="-40" y="467" text-anchor="middle" font-size="14"><3</text>
+		  <text x="0" y="467" text-anchor="middle" font-size="14">3-6</text>
+		  <text x="40" y="467" text-anchor="middle" font-size="14">7-9</text>
+		  <text x="85" y="467" text-anchor="middle" font-size="14">>9</text>
+		  
+		  <text x="-70" y="496" text-anchor="end" font-size="14">Fiabilité</text>
+		  
+		  <circle cx="-40" cy="490" r="12" fill="#E3394A" stroke="none" />
+		  <circle cx="0" cy="490" r="12" fill="#D97E8F" stroke="none" /> 
+		  <circle cx="40" cy="490" r="12" fill="#B1D4E9" stroke="none" />
+		  <circle cx="80" cy="490" r="12" fill="#9B9C9F" stroke="none" />
+		  
+		  <text x="-40" y="517" text-anchor="middle" font-size="14"><4</text>
+		  <text x="0" y="517" text-anchor="middle" font-size="14">4-5</text>
+		  <text x="40" y="517" text-anchor="middle" font-size="14">6-7</text>
+		  <text x="80" y="517" text-anchor="middle" font-size="14">>7</text>
+		  
+		  <!-- Données -->
+		</svg>
+		</div>
+		</div>
+
+
+
+		<div id="at3b">
+		<br/>
+		<br/>
+		<span class="big at3bg">3.B</span><span style="border-bottom:#CCEDEC solid 3px;">Élaboration des scénarios stratégiques</span>
+		<br/><br/><br/>
+		<button onclick="at3b_new()" style="padding:8px 16px;margin: 16px;">Nouveau scénario</button>
+		<br/>
+		 &nbsp;&nbsp; <div class="info-wrapper">
+		  <span class="info-icon">i</span>
+		  <div class="info-wrapper-tooltip">1 à 3 chemins d’attaque par scénario<br/>sont suffisants pour une bonne pertinence.</div>
+		</div>
+		<br/>
+		<br/>
+
+		<div id="at3b_list">
+
+
+		</div>
+		<br/>
+		<div id="at3b_synthese">
+
+		<table id='at3b_table'  class="tabletype" style="margin:0 auto;"><tr class="at3b_tableheader">
+		<td class='at3b_tableheader'>Sources de risque</td>
+		<td class='at3b_tableheader' style='width: 220px;'>Objectifs visés</td>
+		<td class='at3b_tableheader' style='width: 400px;text-align: left;'>Chemins d’attaque stratégiques</td>
+		<td class='at3b_tableheader'>Gravité</td>
+		</tr></table>
+		<br/>
+		<br/>
+		</div>
+		</div>
+
+
+		<div id="at3c">
+		<br/>
+		<br/>
+		<span class="big at3bg">3.C</span><span style="border-bottom:#CCEDEC solid 3px;">Définition des mesures de sécurité sur l'écosystème</span>
+		<br/><br/><br/>
+		<button onclick="at3c_newsec()" style="padding:8px 16px;margin: 16px;">Ajouter</button><br/>
+		<table id='at3c_table' class='tabletype'><tr>
+		<td></td>
+		<td>Partie prenante</td>
+		<td>Chemins d’attaque stratégiques</td>
+		<td>Mesures de sécurité</td>
+		<td style='font-weight:initial'>Menace initiale</td>
+		<td style='font-weight:initial'>Menace résiduelles</td>
+		</tr></table>
+
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<div id="at4a">
+		<br/>
+		<br/>
+		<span class="big at4bg">4.A</span><span style="border-bottom:#F4EECC solid 3px;">Élaboration des scénarios opérationnels</span>
+		<br/><br/><br/>
+		<table style="min-width:800px">
+		<tr><td>
+		<button id="at4a_buttonmod" onclick="at4a_modclick()" style="padding:8px 16px;margin: 16px;">Modifier</button>
+		</td><td id="at4a_tdmod" style="visibility:hidden">
+		Méthode  : Standard
+		<span class='pic_col' style="float:right;">
+		<div class="colselect" style='background-color:#0081BB' onclick="click_pick_col(this)"></div>
+		<div style='background-color:#00AEAB' onclick="click_pick_col(this)"></div>
+		<div style='background-color:#AE3A63' onclick="click_pick_col(this)"></div>
+		<div style='background-color:#F19502' onclick="click_pick_col(this)"></div>
+		</span>
+		</td></tr/>
+		</table>
+
+		<div id="at4a_bulleinfo" style="width:1000px;display:inline-block;margin-left:20px;visibility:hidden;">
+
+		<div id="at4a_bookexploit" onclick="at4a_exploit_list()" title="MITRE Exploit Database"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="30" height="30" fill="#000000" style="position:absolute;margin-top: -4px;  margin-left: -4px;"><path  d="M192 576h320c17.7 0 32-14.3 32-32s-14.3-32-32-32v-66.7c18.6-6.6 32-24.4 32-45.3V112c0-26.5-21.5-48-48-48H192c-53 0-96 43-96 96v320c0 53 43 96 96 96m-32-96c0-17.7 14.3-32 32-32h256v64H192c-17.7 0-32-14.3-32-32m208-252.8V240c0 8.8-7.2 16-16 16h-64c-8.8 0-16-7.2-16-16v-12.8c-19.4-11.7-32-30.3-32-51.2c0-35.3 35.8-64 80-64s80 28.7 80 64c0 20.9-12.6 39.5-32 51.2M304 176c0-8.8-7.2-16-16-16s-16 7.2-16 16s7.2 16 16 16s16-7.2 16-16m48 16c8.8 0 16-7.2 16-16s-7.2-16-16-16s-16 7.2-16 16s7.2 16 16 16m74.2 95.7c4.6 10.1.1 21.9-9.9 26.5L368.4 336l47.9 21.8c10.1 4.6 14.5 16.4 9.9 26.5s-16.4 14.5-26.5 9.9L320 358l-79.7 36.2c-10.1 4.6-21.9.1-26.5-9.9s-.1-21.9 9.9-26.5l47.9-21.8l-47.9-21.8c-10.1-4.6-14.5-16.4-9.9-26.5s16.4-14.5 26.5-9.9L320 314l79.7-36.2c10.1-4.6 21.9-.1 26.5 9.9"/></svg></div> <input id="at4a_bulleinfotexte" type="text" style="width:400px" onchange="at4a_texte_change(this)" onkeyup="at4a_texte_change(this)"/>
+
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+		Probabilité de succès :
+		<select id="at4a_proba_succes" onchange="at4a_proba_succes_change(this)">
+		<option value='0'>0 - Très faible</option>
+		<option value='1'>1 - Faible</option>
+		<option value='2'>2 - Significative</option>
+		<option value='3'>3 - Très élevée</option>
+		<option value='4'>4 - Quasi-certain</option>
+		</select>
+
+		<button id="at4a_but_click_target" style="margin-left: 20px;" onclick="at4a_click_target()">🎯</button>
+
+
+
+		<button style="float:right;margin-left: 50px;" onclick="at4a_delete()">Supprimer</button>
+		</div>
+		<br/>
+		<br/>
+
+		<div id='at4a_scenar' data-arrow="[]">
+
+		<div class='col' id='col1'>
+		<div class='resize' onmousedown="dragdropresize(this,event)">&lt;&gt;</div>
+		<div class='head'>Connaitre</div>
+		<div class='scenarcont'><div class="bulle newbulle" onmousedown="dragdropbulle(this,event)"></div></div>
+		</div><div class='col' id='col2'>
+		<div class='resize' onmousedown="dragdropresize(this,event)">&lt;&gt;</div>
+		<div class='head'>Rentrer</div>
+		<div class='scenarcont'><div class="bulle newbulle" onmousedown="dragdropbulle(this,event)"></div></div>
+		</div><div class='col' id='col3'>
+		<div class='resize' onmousedown="dragdropresize(this,event)">&lt;&gt;</div>
+		<div class='head'>Trouver</div>
+		<div class='scenarcont'><div class="bulle newbulle" onmousedown="dragdropbulle(this,event)"></div></div>
+		</div><div class='col' id='col4'>
+		<div class='resize' onmousedown="dragdropresize(this,event)">&lt;&gt;</div>
+		<div class='head'>Exploiter</div>
+		<div class='scenarcont'><div class="bulle newbulle" onmousedown="dragdropbulle(this,event)"></div></div>
+		</div>
+
+
+		</div>
+
+
+		<br/>
+		<br/>
+
+		<span class="big at4bg">4.B</span><span style="border-bottom:#F4EECC solid 3px;">Vraisemblance des scénarios opérationnels</span>
+		<br/><br/>
+		<div id="at4b_div"></div>
+		<br/>
+		<br/>
+
+		</div>
+
+
+		<div id="at5abcd">
+		<br/>
+		<br/>
+		<span class="big at5bg">5.A</span><span style="border-bottom:#FED6EB solid 3px;">Synthèse des scénarios de risque</span>
+		<br/><br/><br/>
+
+		<button onclick="at5a_addrisk()" style="padding:4px 8px;margin-left:50px;DISPLAY:NONE">Modifier</button>
+		<br/>
+		<br/>
+		<br/>
+		<table id="at5a_risktable" class="at5_risk">
+		  <tr style="height:20px">
+		    <th></th>
+		    <td style="text-align: left;vertical-align:top"><div style="transform: translate(-25px,-25px);display:inline-block;">Gravité</div><div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:14px solid #ccc;transform: translate(-9px,-23px);"></div></td>
+		    <td></td>
+		    <td></td>
+		    <td></td>
+		  </tr>
+		  <tr>
+		    <th>4</th>
+		    <td class="orange" id="at5a_14"></td>
+		    <td class="orange" id="at5a_24"></td>
+		    <td class="red" id="at5a_34"></td>
+		    <td class="red" id="at5a_44"></td>
+		  </tr>
+		  <tr>
+		    <th>3</th>
+		    <td class="green" id="at5a_13"></td>
+		    <td class="orange" id="at5a_23"></td>
+		    <td class="red" id="at5a_33"></td>
+		    <td class="red" id="at5a_43"></td>
+		  </tr>
+		  <tr>
+		    <th>2</th>
+		    <td class="green" id="at5a_12"></td>
+		    <td class="green" id="at5a_22"></td>
+		    <td class="orange" id="at5a_32"></td>
+		    <td class="red" id="at5a_42"></td>
+		  </tr>
+		  <tr>
+		    <th>1</th>
+		    <td class="green" id="at5a_11"></td>
+		    <td class="green" id="at5a_21"></td>
+		    <td class="orange" id="at5a_31"></td>
+		    <td class="orange" id="at5a_41"></td>
+		  </tr>
+		  <tr>
+		    <td style="width:20px;border-top:0px;"></td>
+		    <td>1</td>
+		    <td>2</td>
+		    <td>3</td>
+		    <td>4</td>
+		    <td style="width:20px;text-align: left;vertical-align:top"><div style="transform:translate(-45px,2px);position: absolute;">Vraisemblance</div><div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:14px solid #ccc;position: absolute;transform: translate(20px,-9px);"></div></td>
+		  </tr>
+		</table>
+
+		<br/>
+		<br/>
+		<span>Scénarios de risques :<span>
+		<br/>
+		<table id="at5a_tablerisk"></table>
+
+		<br/>
+		<br/>
+		<span class="big at5bg">5.B</span><span style="border-bottom:#FED6EB solid 3px;">Stratégie de traitement du risque</span>
+		<br/>
+		<br/>
+		<table class="at5b_table" style="width:700px;margin-left:20px;;border:2px solid var(--colorlight);border-collapse:collapse;">
+		  <tr style="background-color:var(--colorlight);text-align:center">
+		    <td class="" style="height:40px">Risque</td>
+		    <td class="" style="height:40px">Acceptabilité</td>
+		    <td class="" style="height:40px">Actions</td>
+		  </tr>
+		  <tr>
+		    <td class="green">Faible</td>
+		    <td class="">Acceptable en l’état</td>
+		    <td class="">Aucune action n’est à entreprendre.</td>
+		  </tr>
+		  <tr>
+		    <td class="orange">Moyen</td>
+		    <td class="">Tolérable sous contrôle</td>
+		    <td class="">Un suivi en termes de gestion du risque est à mener
+		et des actions sont à mettre en place dans le cadre
+		d’une amélioration continue sur le moyen et long terme.</td>
+		  </tr>
+		  <tr>
+		    <td class="red">Élevé</td>
+		    <td class="">Inacceptable</td>
+		    <td class="">Des mesures de réduction du risque doivent
+		impérativement être prises à court terme. Dans le cas contraire, tout ou partie de l’activité sera refusé.</td>
+		  </tr>
+
+		</table>
+
+
+		<br/>
+		<br/>
+		<span class="big at5bg">5.C</span><span style="border-bottom:#FED6EB solid 3px;">Mesures de sécurité</span>
+		<br/>
+		<br/>
+		<button onclick="at5c_add()" style="padding:4px 8px;margin-left:50px;">Ajouter</button>
+		<br/>
+
+		<table id="at5c_table" data-timeoption='[{"mois":1,"label":"1 mois"},{"mois":3,"label":"3 mois"},{"mois":6,"label":"6 mois"},{"mois":12,"label":"1 an"}]'>
+		  <tr style="height:40px">
+			<td style="width:25px"></td>
+		    <td>Mesure</td>
+		    <td>Risque associé</td>
+			<td>Responsable</td>
+			<td style="width:140px;">Cout/Complexité</td>
+			<td>Echéance</td>
+		  </tr>
+		</table>
+
+		<br/>
+		<br/>
+		<span class="big at5bg">5.D</span><span style="border-bottom:#FED6EB solid 3px;">Risques résiduels</span>
+
+		<br/>
+		<br/>
+		Estimation du risque résiduel :<br/>
+		<table id="at5d_riskres">
+
+
+		</table>
+		<br/>
+		<br/>
+
+		<table id="at5d_risktable" class="at5_risk" style="position:relative;"></table>
+
+		<br/>
+		<br/>
+		</div>
+
+
+		</div>
+		</div>
+		<div id="divcenter">
+
+
+		<div id="at00_iconshare">
+		<br/>
+		<br/>
+		<br/>
+		<input style="margin-left:16px;width: 90%;"id="at00_iconshare_link" type="text"/>
+		<br/><br/>
+		<center>
+		<button onclick="at00_iconshare_click()" style="padding:8px 16px;cursor:pointer;">Copier</button>
+		</center>
+		<br/>
+		<br/>
+
+
+		</div>
+
+		<div id="at1a_addppl" style="width:700px;padding: 8px;">
+		<br/>
+
+		<table>
+		<tr><td>Nom</td><td><input id="at1a_name" type="text"/></td></tr>
+		<tr><td>Fonction</td><td><input id="at1a_fonc" type="text"/></td></tr>
+		</table>
+		<button onclick="at1a_newppl()" style="padding:4px 8px;margin:5px 70px;">Ajouter</button>
+		<br/>
+		<div>
+
+		<br/>
+		<br/>
+		<div id="at1a_listppl" style="max-height: calc(100vh - 200px);overflow: auto;background:#eee">
+		<table id="at1a_listppltbl" style="width:300px;margin-left: 20px;">
+
+		</table>
+		</div>
+		<br/>
+		</div>
+		<br/>
+
+		</div>
+
+		<div id="at1b_popupnewmetier">
+
+		<p style="padding:10px">Une valeur métier est un élément essentiel à la mission de l’organisation :<br/>service, processus, information, savoir-faire, activité critique, etc.</p>
+		<br/>
+		<input style="margin-left:16px;width: 300px;"id="at1b_newmetier" type="text"/>
+		<br/>
+
+		<button onclick="at1b_newsmetierADD()" style="padding:8px 16px;margin: 16px 0 0 100px;">Ajouter</button>
+		<br/>
+		<br/>
+		Exemple de valeurs métiers :<br/>
+		<div class="exemple">
+		<h3>Services métiers</h3>
+		- Fourniture d’électricité / eau / télécom<br/>
+		- Service de paiement<br/>
+		- Gestion de la relation client<br/>
+		- Vente en ligne<br/>
+		- Gestion des contrats<br/>
+		- Production industrielle<br/>
+		- Supervision d’infrastructures<br/>
+		- Service de santé / prise en charge patient<br/>
+		- Livraison logistique<br/>
+		- Gestion RH et paie<br/>
+		- Processus critiques<br/>
+		- Traitement des commandes<br/>
+		- Facturation<br/>
+		- Authentification des utilisateurs<br/>
+		- Gestion des accès<br/>
+		- Validation des transactions<br/>
+		- Pilotage opérationnel<br/>
+		- Gestion des incidents<br/>
+		- Déploiement logiciel<br/>
+		- Sauvegarde et restauration<br/>
+		- Gestion de crise<br/>
+		<h3>Informations sensibles</h3>
+		- Données clients<br/>
+		- Données personnelles<br/>
+		- Données bancaires<br/>
+		- Secrets industriels<br/>
+		- Plans techniques<br/>
+		- Données de santé<br/>
+		- Clés cryptographiques<br/>
+		- Données de supervision<br/>
+		- Contrats commerciaux<br/>
+		- Propriété intellectuelle<br/>
+		<h3>Savoir-faire / actifs immatériels</h3>
+		- Algorithmes propriétaires<br/>
+		- Expertise métier<br/>
+		- Méthodes industrielles<br/>
+		- Modèles IA<br/>
+		- Stratégie commerciale<br/>
+		- Base de connaissance interne<br/>
+		<h3>Fonctions support critiques</h3>
+		- SI de production<br/>
+		- Réseau d’entreprise<br/>
+		- ERP<br/>
+		- Active Directory / IAM<br/>
+		- Infrastructure cloud<br/>
+		- Centre d’appel<br/>
+		- SOC / supervision sécurité
+		</div>
+		</div>
+
+		<div id="at2a_newsrovdiv" style="width:700px;padding: 8px;">
+		<br/>
+		<span style="border-bottom:#E2D3E0 solid 3px;margin-left:20px;">Ajouter une Source de Risque / Objectif Visé</span>
+		<br/>
+		<br/>
+		<span style="font-size:smaller">
+		<b>Source de Risque</b>: Acteur ou un élément susceptible de provoquer un incident de sécurité sur l'organisation.<br/>
+		<b>Objectif Visé</b>: Ce que la Source de Risque cherche à atteindre ou compromettre.<br/>
+		</span>
+
+
+		<br/>
+
+		<br/>
+		Source de Risque &nbsp; <input type="text" id="at2a_text_sr"><br/>
+		Objectifs Visés<br/>
+		<div style="width:100%;height:120px;display: contents;">
+		<textarea id="at2a_text_ov" style="width: 100%;    height: 120px;     box-sizing: border-box;"></textarea>
+		</div>
+		<br/>
+		<br/>
+		<center><button onclick="at2a_newsrovok_from_tab()" style="padding:8px 16px">Ajouter</button></center>
+		<br/>
+		Exemple de SR/OV:
+		<div class="exemple">
+		<table id="at2a_tablesrovexemple" >
+		<tr  style="color:#6D2163"><td>Src. de Risque</td><td style="text-indent:10px">Objectif Visés</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Activiste</td><td>Sabotage</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Amateur</td><td>Amusement</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Concurrent</td><td>Vol d'informations R&D en vue d’obtenir un avantage concurrentiel</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Cybercriminel</td><td>Divulgation d'informations volées</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Etatique</td><td>Compromission du réseau de télécommunication</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Ex-salarié</td><td>Suppression de données</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Officine spécialisée</td><td>Divulgation de fausses informations</td></tr>
+		<tr onmousedown="at2a_choosesrov(this)" style="cursor:pointer"><td>Terroriste</td><td>Arrêts d’un site de production</td></tr>
+		</table>
+		</div>
+
+		</div>
+
+		<div id="at2c_ch_ERelm" style="width:700px;padding:8px;">
+
+		<table id="at2c_ch_ERelmTAble" class="at1 tabletype" style="width:100%;margin:0">
+		</table>
+		<center><button onclick="at2c_ch_EROK()" style="padding:8px 16px">Ok</button></center>
+
+		</div>
+
+
+		<div id="at3b_newsscnear" style="width:700px">
+		<br/><span style="border-bottom:#CCEDEC solid 3px;margin-left:20px;">Nouveau scénario stratégiques</span><br/><br/>
+		<br/>
+		<div id="at3b_nosrov">Aucun SR/OV retenu dans l'atelier 2.B</div>
+		<div id="at3b_1"></div>
+		<br/>
+		<div id="at3b_2"></div>
+		<br/>
+
+		<center><button id='at3b_addbutton' onclick="at3b_add()" style="padding:8px 16px">Ajouter</button></center>
+
+		<br/>
+		</div>
+
+		<div id="at3b_addpp" style="width:700px">
+		<br/>
+
+
+		<div id="at3b_nosrov2">Partie prenante<br/><br/>Aucune partie prenante dans l'atelier 3.A<br/><br/></div> 
+		<div id="at3b_addpp_1"></div>
+
+		<center><button onclick="at3b_addppok()" style="padding:8px 16px">Ok</button></center>
+
+		<br/>
+		</div>
+
+
+
+		<div id="at3c_newsmesurediv" style="width:700px">
+		<br/>
+		<br/>
+		<table id="at3c_table_before" class="tabletype">
+		<tr>
+		<td>Partie prenante</td><td>Chemins d’attaque stratégiques</td><td>Menace</td>
+		</tr>
+		</table>
+		<br/>
+		<div id="at3c_nopp">Aucune partie prenante dans les scénarios de l'atelier 3.B<br/><br/></div>
+		<br/>
+		<center><button id="at3c_newsec_button" onclick="at3c_newsec_add()" style="padding:8px 16px;">Ajouter</button></center>
+		<br/>
+		</div>
+
+		<div id="at3c_editmesurediv" style="width:700px">
+		<br/>
+		<br/>
+		<table>
+		<tr style="display:none"><td>Partie prenante</td><td><input id="at3b_new_pp" /></td></tr>
+		<tr><td></td><td></td></tr>
+
+		<tr><td><b>Mesures de sécurité :</b></td><td></td></tr>
+
+		<tr><td>Déscription</td><td><input id="at3b_new_descr" style="border:1px solid grey" contenteditable='true'></td></tr>
+
+		<tr><td colspan="2">Effet :<br/>
+
+		<table>
+		<tr><td>Dépendance</td><td id="at3b_old_d"></td><td>➜</td><td><select id="at3b_new_d" onchange="at3c_recalc()"><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option></select></td></tr>
+		<tr><td>Pénétration</td><td id="at3b_old_p"></td><td>➜</td><td><select id="at3b_new_p" onchange="at3c_recalc()"><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option></select></td></tr>
+		<tr><td>Maturité</td><td id="at3b_old_m"></td><td>➜</td><td><select id="at3b_new_m" onchange="at3c_recalc()"><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option></select></td></tr>
+		<tr><td>Confiance</td><td id="at3b_old_c"></td><td>➜</td><td><select id="at3b_new_c" onchange="at3c_recalc()"><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option></select></td></tr>
+		<tr><td colspan=2>Menace initiale</td><td></td><td>menace résiduelle</td></tr>
+		<tr><td colspan=2 id="at3b_old_calc" style="text-align: right;"></td><td></td><td id="at3b_new_calc"></td></tr>
+		<tr><td></td><td></td><td></td></tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan="2">Détail<br/>
+		<div id="at3b_new_detail" style="width:390px;min-height:100px;border:1px solid grey" contenteditable='true'></div></td></tr>
+		</table>
+		<br/>
+		<br/>
+		<center><button onclick="at3c_edit_ok()" style="padding:8px 16px;">Ok</button></center>
+		<br/>
+		</div>
+
+		<div id="at4a_exploitlist" style="width:700px;">
+
+		<div style="width:180px;display:inline-block;margin-top:8px">
+
+		<img style="margin: 6px 12px;" src="data:image/png;base64,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"/>
+
+		<br/>
+		<div onclick="loadmitre(1)" class='mitreblock mitreblock1'>
+		<span>&nbsp;Connaitre<span><br/>
+		<span class='mitrename'>MITRE Reconnaissance</span><br/>
+		<span class='mitrename'>MITRE Préparat. ressources</span><br/>
+		</div>
+		<br/>
+		<div onclick="loadmitre(2)" class='mitreblock mitreblock2'>
+		<span>&nbsp;Rentrer</span><br/>
+		<span class='mitrename'>MITRE Accès initiaux</span><br/>
+		<span class='mitrename'>MITRE Exécution</span><br/>
+		<span class='mitrename'>MITRE Persistance</span><br/>
+		<span class='mitrename'>MITRE Elévation privilèges</span><br/>
+		<span class='mitrename'>MITRE Evasion de défense</span><br/>
+		</div>
+		<br/>
+		<div onclick="loadmitre(3)" class='mitreblock mitreblock3'>
+		<span>&nbsp;Trouver</span><br/>
+		<span class='mitrename'>MITRE Récup. d'authent.</span><br/>
+		<span class='mitrename'>MITRE Découverte</span><br/>
+		<span class='mitrename'>MITRE Latéralisation</span><br/>
+		<span class='mitrename'>MITRE Collecte</span><br/>
+		</div>
+		<br/>
+		<div onclick="loadmitre(4)" class='mitreblock mitreblock4'>
+		<span>&nbsp;Exploiter</span><br/>
+		<span class='mitrename'>MITRE C&C</span><br/>
+		<span class='mitrename'>MITRE Exfiltration</span><br/>
+		<span class='mitrename'>MITRE Impact</span><br/>
+		</div>
+		</div>
+		<div style="max-height:90vh;float: right; width: 520px; font-size:smaller;overflow: auto; scrollbar-width: thin;margin: 8px 0;">
+		<table id="tabmitre2ebios" >
+
+		</table>
+		</div>
+		</div>
+
+		<div id="at4b_ch_SROVelm" style="width:700px;padding:8px;">
+
+		<table id="at4b_ch_ERelmTAble" class="at2 tabletype" style="width:100%;margin:0">
+		</table>
+		<center><button onclick="at4b_ch_EROK()" style="padding:8px 16px">Ok</button></center>
+
+		</div>
+
+		<div id="at5a_divnewrisk" style="width:700px">
+
+		<input type="hidden" id="at5a_risk_id"></input>
+
+		<br/>
+		<span id="at5a_spanrisk">Nouveau risque</span><br/><br/>
+		<br/>
+		<textarea id="at5a_risk_txt" style="width: 100%;    height: 120px;     box-sizing: border-box;"></textarea>
+		<br/>
+		<table>
+		<tr>
+		<td>Gravité :</td>
+		<td>
+		<select name="at5a_risk_gra" id="at5a_gra">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		</select>
+		</td>
+		</tr>
+		<tr>
+		<tr>
+		<td>Vraisemblance :</td>
+		<td>
+
+		<select name="at5a_risk_vra" id="at5a_vra">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		</select>
+		</td>
+		</tr>
+		</table>
+		<center><button onclick="at5a_addriskok()" style="padding:8px 16px;">Ok</button></center>
+		<br/>
+		</div>
+
+
+
+
+		<div id="at5c_chtime" style="width:700px">
+
+		<br/>
+		<input id="at5c_newtime_int" type="number" style="width:50px"/>
+		<select id="at5c_newtime_jsma">
+		<option value="j">jour</option>
+		<option value="s">semaine</option>
+		<option value="m" selected>mois</option>
+		<option value="a">an</option>
+		</select><button onclick="at5c_chtime_add()" style="">+</button>
+		<table id="at5c_chtime_table">
+		<tr>
+		<td>None</td>
+		</tr>
+		<tr>
+		</table>
+		<center><button onclick="hide_divgrey()" style="padding:8px 16px;">Fermer</button></center>
+		<br/>
+		</div>
+
+		<div id="at1d_chsocle" style="width:700px;padding:20px;">
+
+
+		<input type="text" style="width:200px" id="at1d_socle_addinput"/><button onclick="at1d_socle_add()" style="">+</button>
+		<table id="at1d_socle_list">
+		</table>
+		<br/>
+		<center><button onclick="hide_divgrey()" style="padding:8px 16px;">Fermer</button></center>
+		<br/>
+		</div>
+
+
+		</div>
+
+    <script src="./ebiosRMgraph.js"></script>
+  </body>
+</html>

@@ -1,0 +1,5579 @@
+var ipp = 0;
+var icat = 0;
+//var version = 260907;
+
+log = function() {
+  return Function.prototype.bind.call(console.log, console);
+}();
+warn = function() {
+  return Function.prototype.bind.call(console.warn, console);
+}();
+error = function() {
+  return Function.prototype.bind.call(console.error, console);
+}();
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    if (divgrey.style.display != 'none')
+      hide_divgrey()
+  }
+})
+
+
+function saveJSON(saveformat) {
+
+
+
+
+  var savedata = {}
+
+  // AT1A
+  savedata.at1a = {}
+
+  savedata.at1a.at1a_org = at1a_org.value
+  savedata.at1a.at1a_nom = at1a_nom.value
+  savedata.at1a.at1a_date = at1a_date.value
+  savedata.at1a.at1a_ver = at1a_ver.value
+  savedata.at1a.at1a_notes = at1a_notes.value
+
+
+  if (at1a_raci.dataset.ppl)
+    savedata.at1a.ppl = at1a_raci.dataset.ppl
+
+  savedata.at1a.divppl = []
+  at1a_raci.querySelectorAll(".divppl").forEach(el => {
+    savedata.at1a.divppl.push({
+      uid: el.dataset.uid,
+      tr: el.closest('tr').rowIndex,
+      td: el.closest('td').cellIndex
+    })
+  })
+
+  // AT1B
+  savedata.at1b = []
+  for (var i = 1; i < at1b_table.rows.length; i++) {
+    var tr = at1b_table.rows[i];
+    var tabtr = []
+    tabtr.push(tr.dataset.idvm)
+    tabtr.push(tr.querySelector('.spantext').innerText)
+    savedata.at1b.push(tabtr)
+  }
+
+  // AT1C
+  savedata.at1c = []
+  for (var i = 1; i < at1c_table.rows.length; i++) {
+    var tr = at1c_table.rows[i];
+    var tabtr = []
+
+    if (tr.cells.length == 5) {
+      tabtr.push(tr.cells[1].querySelector('p').innerText)
+      tabtr.push(tr.cells[2].innerText)
+      tabtr.push(tr.cells[3].innerText)
+      tabtr.push(tr.dataset.idvm)
+    } else {
+      tabtr.push("")
+      tabtr.push(tr.cells[1].innerText)
+      tabtr.push(tr.cells[2].innerText)
+      tabtr.push("")
+    }
+
+
+    tabtr.push(tr.querySelector('.gravitespan').innerText)
+    tabtr.push(tr.dataset.ider)
+    savedata.at1c.push(tabtr)
+  }
+
+
+  // AT1D
+
+  savedata.at1d_socleslist = at1d.dataset.socles
+  savedata.at1d_socles = []
+  at1d_soclediv.querySelectorAll(".at1d_divsocle").forEach(el => {
+    savedata.at1d_socles.push({
+      soclename: el.querySelector('.at1c_select_socle').value,
+      soclestatut: el.querySelector('.at1c_select_socle2').value,
+      text: el.querySelector('textarea').value
+    })
+  })
+
+
+  // AT2B
+  savedata.at2b = []
+  for (var i = 1; i < at2b_srovlist.rows.length; i++) {
+    var tr = at2b_srovlist.rows[i];
+    var tabtr = []
+
+    tabtr.push(tr.cells[1].querySelector('select').value)
+    tabtr.push(tr.cells[2].innerText)
+    tabtr.push(tr.cells[3].querySelector('select').value)
+    tabtr.push(tr.cells[4].innerText)
+    tabtr.push(tr.cells[5].querySelector('.at2b_mra').dataset.m + '|' + tr.cells[5].querySelector('.at2b_mra').dataset.r)
+    tabtr.push(tr.cells[7].querySelector('input').checked)
+    tabtr.push(tr.cells[8].querySelector('textarea').value)
+
+    savedata.at2b.push(tabtr)
+  }
+
+  // AT2C
+  savedata.at2c = []
+  for (var i = 1; i < at2c_srovlist.rows.length; i++) {
+    var tr = at2c_srovlist.rows[i];
+    var tabtr = []
+
+    tabtr.push(tr.dataset.idsrov)
+    tabtr.push(tr.dataset.ider)
+
+    savedata.at2c.push(tabtr)
+  }
+
+  // AT3A
+  savedata.at3a = {
+    seuil1: seuil1.value,
+    seuil2: seuil2.value,
+    seuil3: seuil3.value
+  }
+
+  var at3_cat = []
+
+  var lstcat = cont_at3a.querySelectorAll('.at3_cat')
+
+  for (var i = 0; i < lstcat.length; i++) {
+    var c = lstcat[i];
+    var bloccat = {
+      name: c.querySelector('input').value
+    }
+    var pp = []
+
+    c.querySelectorAll('.at3_pp').forEach(e => pp.push([e.dataset.ppuid, e.querySelector('input').value, parseInt(e.dataset.dep), parseInt(e.dataset.pen), parseInt(e.dataset.mat), parseInt(e.dataset.conf)]));
+    bloccat['pp'] = pp
+    at3_cat.push(bloccat)
+  }
+  savedata.at3a['cat'] = at3_cat
+
+  // AT3B
+  savedata.at3b = {}
+
+  var lst = []
+  at3b_list.querySelectorAll('.at3b_sc').forEach(e => lst.push(e.dataset.attackinfo));
+  savedata.at3b = lst
+
+
+  // AT3C
+  savedata.at3c = at3c_table.innerHTML
+
+
+  // AT4A
+  savedata.at4a = {}
+
+
+  var tabbulles = []
+  document.querySelectorAll('.bulle:not(.newbulle)').forEach(el => {
+    tabbulles.push({
+      id: el.id,
+      col: el.closest(".col").id,
+      x: parseInt(el.style.left),
+      y: parseInt(el.style.top),
+      txt: el.querySelector('.bulletxt').innerText,
+      proba: parseInt(el.querySelector('.probaicon').dataset.value),
+      classname: el.className
+    })
+  })
+
+
+
+  savedata.at4a = {
+    arrow: JSON.parse(at4a_scenar.dataset.arrow),
+    tabbulles: tabbulles,
+    col1w: col1.offsetWidth,
+    col2w: col2.offsetWidth,
+    col3w: col3.offsetWidth,
+    col4w: col4.offsetWidth
+  }
+
+  // AT4B
+  savedata.at4b = {}
+  if (typeof at4b_TABLE !== "undefined")
+    for (var i = 1; i < at4b_TABLE.rows.length; i++) {
+      var tr = at4b_TABLE.rows[i];
+      if (tr.dataset.idsrov != "0") {
+        var dataIDsave = JSON.parse(tr.dataset.pathfound).nodes.join('_')
+        savedata.at4b[dataIDsave] = tr.dataset.idsrov
+      }
+    }
+
+  // AT5A
+  //savedata.at5abcd=at5abcd.dataset.data
+  savedata.at5a_risktable = at5a_risktable.dataset.riskinfo
+
+  // AT5C
+  savedata.at5c_timeoption = at5c_table.dataset.timeoption
+  savedata.at5c_table = []
+  for (var i = 1; i < at5c_table.rows.length; i++) {
+    var tr = at5c_table.rows[i];
+    var tabtr = []
+
+    tabtr.push(tr.cells[1].innerText)
+    tabtr.push(Array.from(tr.cells[2].querySelectorAll("span[data-iduniq]")).map(el => el.getAttribute('data-iduniq')).join(','))
+    tabtr.push(Array.from(tr.cells[3].querySelectorAll("div[data-uid]")).map(el => el.getAttribute('data-uid')).join(','))
+    tabtr.push(tr.cells[4].querySelector('select').value)
+    tabtr.push(tr.cells[5].querySelector('select').value)
+
+    savedata.at5c_table.push(tabtr)
+  }
+
+
+
+  if (saveformat == 2) {
+    const json = JSON.stringify(savedata);
+    return LZString.compressToEncodedURIComponent(json)
+  }
+
+
+
+  //DOWNLOAD FILE
+  const contenu = JSON.stringify(savedata, null, 2);
+  const blob = new Blob([contenu], {
+    type: "text/plain;charset=utf-8;"
+  });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = get_downloadfilename() //"backup.json";
+  document.body.appendChild(a);
+  a.click();
+
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function get_downloadfilename() {
+  var txtorg = at1a_org.value;
+  var txtnom = at1a_nom.value;
+  var txtver = at1a_ver.value;
+
+  if (!txtorg) return "backup.json"
+  if (txtnom) txtnom = " (" + txtnom + ")"
+  if (txtver) txtver = "_v" + txtver
+
+  return txtorg + txtnom + txtver + ".json"
+}
+
+
+
+
+function demanderEtLireJSON() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+
+  input.onchange = function(event) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function() {
+      // try {
+      loadJSON(2, reader.result)
+
+      // } catch (e) {
+      //   console.error("Fichier JSON invalide");
+      //  }
+    };
+
+    reader.readAsText(fichier, "utf-8");
+
+  };
+
+  input.click();
+
+}
+
+
+
+function isValidJSON(str) {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function loadJSON(infile, data) {
+
+
+  if (infile == 1) {
+    demanderEtLireJSON();
+    return;
+  } else if (infile == 2) {
+    var dataLS = data;
+  } else {
+    console.error('error function loadJSON')
+    return;
+  }
+
+
+  if (!dataLS || !isValidJSON(dataLS)) {
+    alert("Erreur lors du chargement des données.")
+    return;
+  }
+
+
+
+
+  cacheClear();
+
+  var savedata = JSON.parse(dataLS);
+
+  //AT1A
+  at1a_raci.querySelectorAll('.divppl').forEach(e => e.remove());
+
+
+  at1a_org.value = savedata.at1a.at1a_org
+  at1a_nom.value = savedata.at1a.at1a_nom
+  at1a_date.value = savedata.at1a.at1a_date
+  at1a_ver.value = savedata.at1a.at1a_ver
+  at1a_notes.value = savedata.at1a.at1a_notes
+
+
+  if (savedata.at1a.ppl)
+    at1a_raci.dataset.ppl = savedata.at1a.ppl
+
+  savedata.at1a.divppl.forEach(el => {
+    PPL_clickTD = at1a_raci.rows[el.tr].cells[el.td]
+    add_ppl_inTD(el.uid)
+  })
+
+
+  //AT1B
+  while (at1b_table.rows[1]) at1b_table.rows[1].remove()
+
+  savedata.at1b.forEach(el => {
+    at1b_newsmetier(el[1], el[0])
+  })
+
+
+  // AT1C
+  while (at1c_table.rows[1]) at1c_table.rows[1].remove()
+
+
+  var at1c = savedata.at1c
+
+
+  var ROWmain = false
+  savedata.at1c.forEach(LineData => {
+
+    if (LineData[0] != "") {
+      var row = at1c_newsmetier()
+      row.cells[1].querySelector('p').innerText = LineData[0];
+      ROWmain = row;
+      var diff = 0;
+      row.dataset.idvm = LineData[3]
+    } else {
+      var row = at1c_newsevent(ROWmain)
+      var diff = 1;
+    }
+
+
+    row.cells[2 - diff].innerText = LineData[1]
+    row.cells[3 - diff].innerText = LineData[2]
+    var ig = parseInt(LineData[4]) - 1
+
+    for (var i = 0; i < ig; i++)
+      chtdgravite(row.cells[4 - diff])
+
+    row.dataset.ider = LineData[5]
+  });
+
+
+  // AT1D
+  at1d_soclediv.innerHTML = "";
+  at1d.dataset.socles = savedata.at1d_socleslist
+  savedata.at1d_socles.forEach(el => {
+    at1d_new()
+    var last = at1d_soclediv.querySelectorAll(".at1d_divsocle:last-child")[0]
+
+    last.querySelector('.at1c_select_socle').value = el.soclename
+    last.querySelector('.at1c_select_socle2').value = el.soclestatut
+    last.querySelector('textarea').value = el.text
+    //at1d_appliq_ch(last.querySelector('.at1c_select_socle2'))
+  })
+
+
+  // AT2B
+  while (at2b_srovlist.rows[1]) at2b_srovlist.rows[1].remove()
+  while (at2c_srovlist.rows[1]) at2c_srovlist.rows[1].remove()
+
+
+  var rowX = 1;
+  savedata.at2b.forEach(LineData => {
+
+    var tr = at2a_newsrovok("", "")
+
+
+    tr.cells[1].querySelector('select').value = LineData[0]
+    tr.cells[2].innerText = LineData[1]
+    tr.cells[3].querySelector('select').value = LineData[2]
+    tr.cells[4].innerText = LineData[3]
+
+    var s = tr.cells[5].querySelector('.select_mra_m')
+    s.value = "m" + LineData[4].split('|')[0]
+    at2b_selectmrachange(s)
+    var s = tr.cells[5].querySelector('.select_mra_r')
+    s.value = "r" + LineData[4].split('|')[1]
+    at2b_selectmrachange(s)
+
+    tr.cells[7].querySelector('input').checked = LineData[5];
+    tr.cells[8].querySelector('textarea').value = LineData[6]
+
+    // AT2C
+    at2c_srovlist.rows[rowX].cells[0].innerText = LineData[1]
+    at2c_srovlist.rows[rowX].cells[1].querySelector('.td_reducetext').innerText = LineData[3]
+    rowX++;
+  })
+
+
+
+  at2b_redraw_graph();
+  at2c_redraw();
+
+  // AT2C
+
+  savedata.at2c.forEach(LineData => {
+
+    var idsrov = LineData[0]
+    var ider = LineData[1]
+
+    var tr = at2c_srovlist.querySelector("[data-idsrov='" + idsrov + "']")
+    tr.dataset.ider = ider
+
+    if (ider != "null") {
+      var TRat1c = at1c_table.querySelector("[data-ider='" + ider + "']")
+      if (!TRat1c) warn('Missing ER in AT1C')
+      else tr.cells[2].innerText = TRat1c.cells.length == 5 ? TRat1c.cells[2].innerText : TRat1c.cells[1].innerText;
+    }
+  })
+
+
+
+
+  // AT3A
+  seuil1.value = savedata.at3a.seuil1
+  seuil2.value = savedata.at3a.seuil2
+  seuil3.value = savedata.at3a.seuil3
+
+  while (cont_at3a.querySelector('.at3_cat')) cont_at3a.querySelector('.at3_cat').remove()
+
+  savedata.at3a.cat.forEach(LineData => {
+    at3a_newcat(LineData.name)
+
+    var but = cont_at3a.querySelectorAll('button')
+    var lastbut = but[but.length - 1];
+    LineData.pp.forEach(pp => {
+      newpp(lastbut, "debug")
+      var elm = cont_at3a.querySelectorAll('.at3_pp')
+      var lastelm = elm[elm.length - 1];
+      lastelm.dataset.ppuid = pp[0]
+      clickmenace = lastelm;
+      dep.value = pp[2]
+      pen.value = pp[3]
+      mat.value = pp[4]
+      conf.value = pp[5]
+      lastelm.querySelector('input').value = pp[1]
+      menaceok()
+    })
+  })
+
+
+
+
+  // AT3B
+  at3b_list.querySelectorAll('.at3b_sc').forEach(e => e.remove()); // SLOW TO LOAD HERE ?????
+  savedata.at3b.forEach(e => at3b_add(e));
+  at3b_redraw()
+
+  // AT3C
+  at3c_table.innerHTML = savedata.at3c // yes, i'm lazy, but it works
+
+
+
+
+  // AT4A
+  at4a_scenar.querySelectorAll('.bulle:not(.newbulle)').forEach(e => e.remove());
+
+
+  at4a_arrowlist = savedata.at4a.arrow
+  at4a_scenar.dataset.arrow = JSON.stringify(savedata.at4a.arrow)
+
+
+
+  savedata.at4a.tabbulles.forEach(e => {
+    at4a_newbulle(e.id, at4a_scenar.querySelector('#' + e.col + ' .scenarcont'), e.x + "px", e.y + "px", e.txt, e.proba, e.classname)
+  });
+
+  col1.style.width = savedata.at4a.col1w + "px"
+  col2.style.width = savedata.at4a.col2w + "px"
+  col3.style.width = savedata.at4a.col3w + "px"
+  col4.style.width = savedata.at4a.col4w + "px"
+
+  at4a_refresh_path_at4b()
+
+
+  // AT4B
+  for (var i = 1; i < at4b_TABLE.rows.length; i++) {
+    var tr = at4b_TABLE.rows[i];
+
+    var dataIDsave = JSON.parse(tr.dataset.pathfound).nodes.join("_")
+    log(dataIDsave)
+    if (savedata.at4b[dataIDsave]) {
+      log('FOUND')
+      log(tr)
+      tr.cells[2].innerText = "OK"
+      var idsrov = savedata.at4b[dataIDsave]
+      tr.dataset.idsrov = idsrov;
+      cacheSave(dataIDsave, idsrov)
+    }
+
+  }
+  /*
+savedata.at4b.forEach(LineData => {
+
+	var dataIDsave = LineData[0]
+	var idsrov = LineData[1]	
+	})
+*/
+
+  //AT5A
+  at5a_risktable.dataset.riskinfo = savedata.at5a_risktable
+  /*
+  at5a_risktable.querySelectorAll('span').forEach(e => e.remove());
+  while(at5a_tablerisk.rows[0])at5a_tablerisk.rows[0].remove()
+
+  if(savedata.at5abcd)
+  	at5abcd.dataset.data=savedata.at5abcd
+  if(savedata.at5abcd)
+  	JSON.parse(savedata.at5abcd).risk.forEach(e=>{if(e)at5a_writerisk(e.id,e.txt,e.vra,e.gra)})
+  */
+
+  //AT5C
+  at5c_table.dataset.timeoption = savedata.at5c_timeoption
+  while (at5c_table.rows[1]) at5c_table.rows[1].remove();
+
+  savedata.at5c_table.forEach(e => {
+    var tr = at5c_add()
+    tr.cells[1].innerText = e[0]
+    PPL_clickTD = tr.cells[2];
+    e[1].split(',').map(id => at5c_addrisk(id));
+    PPL_clickTD = tr.cells[3];
+    e[2].split(',').map(id => {
+      if (id) add_ppl_inTD(id)
+    });
+    tr.cells[4].querySelector('select').value = e[3]
+    tr.cells[5].querySelector('select').value = e[4]
+  });
+
+}
+
+
+
+
+function newpp(elem, name) {
+  var inblock = elem.closest('.at3_cat').querySelector('.listpp');
+
+  ipp++
+
+  var UID = Math.random().toString(36).slice(2) //self.crypto.randomUUID();
+
+  var HTML = "<div class='at3_pp' data-expo='9' data-fiab='4' data-menace='2.25' data-dep='3' data-pen='3' data-mat='2' data-conf='2' data-ppuid='" + UID + "'>"
+
+  if (!name) {
+    ipp++
+    name = "Partie p. " + ipp
+  }
+  HTML += "<input type=text value='" + name + "'  onchange='chinput(this)'></input><br/>"
+
+  HTML += "<div class='close' onclick=deletepp(this)>×</div>"
+
+  HTML += "<span class='menacelvl' onclick='chmenace(this)'>Menace <div class='menacecolor'><span class='menace'>2.25</span> <div style='transform: scale(-1, 1);display: inline-block;font-size: 20px;'>&#x270E;</div></span></div><br/>"
+
+
+
+  HTML += "</div>"
+  inblock.innerHTML += HTML
+
+  at3a_redraw_graph()
+}
+
+
+
+var clickmenace = false
+
+function chmenace(elem) {
+
+  var pp = elem.closest('.at3_pp')
+  dep.value = pp.dataset.dep
+  pen.value = pp.dataset.pen
+  mat.value = pp.dataset.mat
+  conf.value = pp.dataset.conf
+
+  var ppname = pp.querySelector('input').value
+
+  clickmenace = elem;
+
+  div_menace.querySelectorAll('.div_menacepptext').forEach(e => e.innerText = ppname);
+
+
+  show_divgrey()
+  div_menace.style.display = 'block'
+
+  calcexpo()
+  calcfiab()
+}
+
+function show_divcenter() {
+  show_divgrey()
+  divcenter.style.display = 'block'
+  divcenter.querySelectorAll(":scope > div").forEach(e => e.style.display = "none");
+}
+
+
+function show_divgrey() {
+  divgrey.style.display = "block"
+  document.body.classList.add('bodyhidescroll')
+}
+
+function hide_divcenter() {
+  hide_divgrey()
+}
+
+function hide_divgrey() {
+  divgrey.style.display = 'none'
+  div_menace.style.display = 'none'
+  divcenter.style.display = 'none'
+  document.body.classList.remove('bodyhidescroll')
+}
+
+function menaceok() {
+
+  var newexpo = (dep.value * pen.value)
+  var newfiab = (mat.value * conf.value)
+  var newmenace = Math.round(newexpo / newfiab * 100) / 100
+
+  clickmenace.querySelector('.menacecolor').style.backgroundColor = get_menacecolor(newmenace)
+  clickmenace.querySelector('.menace').innerHTML = newmenace
+
+
+  menace_set(clickmenace.closest('.at3_pp'), newexpo, newfiab, newmenace)
+
+
+  div_menace.style.display = 'none'
+  divgrey.style.display = 'none'
+
+  at3a_redraw_graph()
+}
+
+function get_menacecolor(m) {
+  if (m >= seuil3.value) return "#E3394AAA"
+  if (m >= seuil2.value) return "#F6E742AA"
+  if (m >= seuil1.value) return "#00A7A2AA"
+  return "#DBF2FF"
+
+}
+
+function menace_set(clickmenacediv, e, f, m) {
+  clickmenacediv.dataset.dep = dep.value
+  clickmenacediv.dataset.pen = pen.value
+  clickmenacediv.dataset.mat = mat.value
+  clickmenacediv.dataset.conf = conf.value
+
+  clickmenacediv.dataset.expo = e
+  clickmenacediv.dataset.fiab = f
+  clickmenacediv.dataset.menace = m
+}
+
+
+
+function at3a_newcat(name) {
+
+  var listblock = document.querySelector('.listblock')
+  icat++
+  var HTML = "<div class='at3_cat'>"
+  HTML += "<div class='close' onclick=deletecat(this)>×</div>"
+
+
+  if (!name) {
+    var name = "Clients"
+    if (icat == 2) name = "Partenaires"
+    if (icat == 3) name = "Prestataires"
+    if (icat == 4) name = "Interne"
+    if (icat > 4) name = "Cat. " + icat
+  }
+  HTML += "<input type=text value='" + name + "' onchange='chinput(this)'></input> "
+  HTML += '<button onclick="newpp(this)" style="height:24px;cursor:pointer"> + Partie prenante </button><br/>'
+
+
+
+
+  HTML += '<div class="listpp"></div>'
+
+
+
+  HTML += "</div>"
+  listblock.innerHTML += HTML
+
+  at3a_redraw_graph()
+}
+
+
+function at3a_redraw_graph() {
+
+  document.querySelectorAll('.svgadded, .svgaddedclick').forEach(e => e.remove());
+
+  redraw_block()
+  redraw_pp()
+}
+
+
+
+function over_pp(event, elem) {
+  document.querySelectorAll('.overcircle').forEach(e => e.classList.remove('overcircle'));
+
+
+  var icat = parseInt(elem.dataset.icat)
+  var ipp = parseInt(elem.dataset.ipp)
+
+  var ppover = document.querySelectorAll('.at3_cat')[icat].querySelectorAll('.at3_pp')[ipp]
+
+  ppover.classList.add('overcircle');
+
+
+  divover.style.display = "inline-block";
+
+  divover.style.left = elem.getBoundingClientRect().right + 15 + "px" //40+event.clientX+"px"
+  divover.style.top = elem.getBoundingClientRect().bottom - 50 + "px" //-30+event.clientY+"px"
+
+  var HTML = ""
+
+  HTML += "<b>" + ppover.querySelector('input').value + "</b><br/>"
+  HTML += "<table>"
+  HTML += "<tr><td>Expo.</td><td>:</td><td>" + ppover.dataset.expo + "<td/></tr>"
+  HTML += "<tr><td>Fiabilité</td><td>:</td><td>" + ppover.dataset.fiab + "<td/></tr>"
+  HTML += "<tr><td>Menace</td><td>:</td><td>" + ppover.dataset.menace + "<td/></tr>"
+  HTML += "</table>"
+  divover.innerHTML = HTML
+}
+
+function out_pp(elem) {
+  document.querySelectorAll('.overcircle').forEach(e => e.classList.remove('overcircle'));
+  divover.style.display = "none";
+}
+
+
+function click_pp(elem) {
+  var icat = parseInt(elem.dataset.icat)
+  var ipp = parseInt(elem.dataset.ipp)
+
+  document.querySelectorAll('.at3_cat')[icat].querySelectorAll('.at3_pp')[ipp].querySelector('.menace').click()
+}
+
+function redraw_pp() {
+
+  var cats = document.querySelectorAll('.at3_cat')
+
+
+  for (var icat = 0; icat < cats.length; icat++) {
+    var anglestart = cats[icat].dataset.anglestart
+    var anglestop = cats[icat].dataset.anglestop
+    var pps_in_block = cats[icat].querySelectorAll('.at3_pp')
+
+    for (var i = 0; i < pps_in_block.length; i++) {
+
+      var pp = pps_in_block[i]
+
+      var expo = pp.dataset.expo
+      var fiab = pp.dataset.fiab
+      var menace = pp.dataset.menace
+
+      if (menace > 5.9) menace = 5.9;
+      var distance = 300 - 50 * menace
+
+      var space_between_pp = (-anglestop - anglestart) / (pps_in_block.length + 1)
+
+      var angler = (-space_between_pp - anglestart - space_between_pp * i) / 180 * Math.PI;
+      var posx = Math.cos(angler) * distance
+      var posy = Math.sin(angler) * distance
+
+
+      var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newLine.setAttribute('class', "svgaddedclick");
+      newLine.setAttribute('data-icat', icat);
+      newLine.setAttribute('data-ipp', i);
+      newLine.setAttribute('onmouseover', "over_pp(event,this)");
+      newLine.setAttribute('onmouseout', "out_pp(this)");
+      newLine.setAttribute('onclick', "click_pp(this)");
+      newLine.setAttribute('cx', posx);
+      newLine.setAttribute('cy', posy);
+
+      var fiabcolor = "#9B9C9F"
+      if (fiab < 7) fiabcolor = "#B1D4E9"
+      if (fiab < 5) fiabcolor = "#D97E8F"
+      if (fiab < 4) fiabcolor = "#E3394A"
+      newLine.setAttribute('fill', fiabcolor);
+
+      var rsize = "20"
+      if (expo < 9) rsize = "16"
+      if (expo < 6) rsize = "13"
+      if (expo < 3) rsize = "10"
+      newLine.setAttribute('r', rsize);
+
+
+
+      document.getElementById("at3a_svg").append(newLine);
+    }
+
+  }
+}
+
+
+
+function redraw_block() {
+
+  var cats = document.querySelectorAll('.at3_cat')
+  var nbcats = cats.length
+
+
+  // SEUIL1
+  var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  newLine.setAttribute('class', "svgadded");
+  newLine.setAttribute('fill', "none");
+  newLine.setAttribute('stroke', "#00A7A2");
+  newLine.setAttribute("stroke-width", "3")
+  newLine.setAttribute("stroke-opacity", "80%")
+  newLine.setAttribute('r', 300 - seuil1.value * 50);
+  at3a_svg.insertBefore(newLine, bluecircle);
+
+  // SEUIL2
+  var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  newLine.setAttribute('class', "svgadded");
+  newLine.setAttribute('fill', "none");
+  newLine.setAttribute('stroke', "#F6E742");
+  newLine.setAttribute("stroke-width", "3")
+  newLine.setAttribute("stroke-opacity", "80%")
+  newLine.setAttribute('r', 300 - seuil2.value * 50);
+  at3a_svg.insertBefore(newLine, bluecircle);
+
+  // SEUIL3
+  var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  newLine.setAttribute('class', "svgadded");
+  newLine.setAttribute('fill', "none");
+  newLine.setAttribute('stroke', "#E3394A");
+  newLine.setAttribute("stroke-width", "3")
+  newLine.setAttribute("stroke-opacity", "80%")
+  newLine.setAttribute('r', 300 - seuil3.value * 50);
+  at3a_svg.insertBefore(newLine, bluecircle);
+
+
+  svg_seuil1.innerHTML = "Seuil " + seuil1.value
+  svg_seuil2.innerHTML = "Seuil " + seuil2.value
+  svg_seuil3.innerHTML = "Seuil " + seuil3.value
+
+
+  for (var icat = 0; icat < nbcats; icat++) {
+
+    var tcolor = ["mediumslateblue", "darkorange", "forestgreen", "firebrick", "chocolate"]
+    var color = tcolor[icat % tcolor.length]
+
+    var angle_p_cat = 270 / nbcats
+    blockstart = icat * angle_p_cat
+
+    cats[icat].dataset.anglestart = blockstart
+    cats[icat].dataset.anglestop = -blockstart - angle_p_cat
+
+    var textblock = cats[icat].querySelector('input').value
+
+    var distance = 340
+    var angler = (-blockstart - 2) / 180 * Math.PI;
+
+    var posx1 = Math.cos(angler) * distance
+    var posy1 = Math.sin(angler) * distance
+
+
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    newLine.setAttribute('class', "svgadded");
+
+    newLine.setAttribute('x2', posx1);
+    newLine.setAttribute('y2', posy1);
+    newLine.setAttribute("stroke", color)
+    newLine.setAttribute("stroke-dasharray", "6")
+    newLine.setAttribute("stroke-width", "2")
+    document.getElementById("at3a_svg").insertBefore(newLine, bluecircle);
+
+
+    var angler = (-blockstart - angle_p_cat + 2) / 180 * Math.PI;
+    var posx2 = Math.cos(angler) * distance
+    var posy2 = Math.sin(angler) * distance
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    newLine.setAttribute('class', "svgadded");
+
+    newLine.setAttribute('x2', posx2);
+    newLine.setAttribute('y2', posy2);
+    newLine.setAttribute("stroke", color)
+    newLine.setAttribute("stroke-dasharray", "6")
+    newLine.setAttribute("stroke-width", "2")
+    document.getElementById("at3a_svg").insertBefore(newLine, bluecircle);
+
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    newLine.setAttribute('class', "svgadded");
+    newLine.setAttribute('id', "curvepp" + icat);
+    //newLine.setAttribute('d','M '+posx1+' '+posy1+' A 150 150 20 0 0 '+posx2+' '+posy2);
+    if (angle_p_cat < 180)
+      newLine.setAttribute('d', 'M ' + posx1 + ' ' + posy1 + ' A ' + distance + ' ' + distance + ' 0 0 0 ' + posx2 + ' ' + posy2);
+    else
+      newLine.setAttribute('d', 'M ' + posx1 + ' ' + posy1 + ' A ' + distance + ' ' + distance + ' 1 1 0 ' + posx2 + ' ' + posy2);
+
+    var center_block_side = 2 * distance * Math.PI / 360 * (angle_p_cat - 5) / 2
+
+    newLine.setAttribute("stroke", color)
+
+    newLine.setAttribute("stroke-width", "2.5")
+    newLine.setAttribute("stroke-dasharray", "6")
+    newLine.setAttribute("fill", "none")
+    document.getElementById("at3a_svg").insertBefore(newLine, bluecircle);
+
+
+    var text1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text1.setAttribute('class', "svgadded");
+    text1.setAttributeNS(null, "fill", color);
+    text1.setAttributeNS(null, "font-size", "24px");
+    text1.setAttributeNS(null, "x", center_block_side);
+    text1.setAttributeNS(null, "dy", "-5");
+
+    text1.setAttributeNS(null, "text-anchor", "middle");
+
+
+    var textpath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+    textpath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#curvepp" + icat);
+    var ringdatenode = document.createTextNode(textblock);
+    textpath.appendChild(ringdatenode);
+    text1.appendChild(textpath);
+    document.getElementById("at3a_svg").appendChild(text1);
+  }
+}
+
+
+
+
+function deletecat(elem) {
+  elem.closest('.at3_cat').remove()
+  at3a_redraw_graph()
+}
+
+function deletepp(elem) {
+  elem.closest('.at3_pp').remove()
+  at3a_redraw_graph()
+}
+
+
+function go() {
+  at3a_newcat()
+  at3a_newcat()
+
+  showatt('at1a', document.querySelector('.startscript'))
+
+  // HASH
+  window.addEventListener("hashchange", even_hashchange)
+  even_hashchange();
+}
+
+
+function even_hashchange() {
+
+  var hash = window.location.hash
+  if (!hash.startsWith("#autoload=")) return;
+  log("even_hashchange")
+
+  const valueencoded = hash.split("=")[1];
+
+  //remove hash
+  history.replaceState(null, "", window.location.pathname + window.location.search);
+
+  //load data
+  const json = LZString.decompressFromEncodedURIComponent(valueencoded);
+  loadJSON(2, json)
+
+
+}
+
+function seuil() {
+  if (divseuil.style.display == "block") {
+    document.querySelector('.listblock').style.display = "block"
+    butnewcat.style.display = "inline-block"
+    divseuil.style.display = "none"
+
+
+    return;
+  }
+  document.querySelector('.listblock').style.display = "none"
+  butnewcat.style.display = "none"
+  divseuil.style.display = "block"
+
+}
+
+function calcexpo() {
+  calcexpotext.innerHTML = " ( " + parseInt(dep.value) * parseInt(pen.value) + " )"
+}
+
+function calcfiab() {
+  calcfiabtext.innerHTML = " ( " + parseInt(mat.value) * parseInt(conf.value) + " )"
+}
+
+
+function clickmenu(elem) {
+  var id = elem.id;
+  var isclose = (document.querySelector("." + id + "open").style.display == "none")
+
+  var todo = "none"
+  if (isclose)
+    todo = "block"
+  document.querySelectorAll("." + id + "open").forEach(e => e.style.display = todo);
+}
+
+
+function at2a_newsrov() {
+  show_divcenter()
+  at2a_newsrovdiv.style.display = "block"
+  at2a_text_sr.value = ""
+  at2a_text_ov.value = ""
+}
+
+function at2a_newsrovok_from_tab() {
+  hide_divgrey()
+  if (at2a_text_ov.value == "") {
+    return;
+  }
+
+
+  at2a_newsrovok(at2a_text_sr.value, at2a_text_ov.value)
+}
+
+function at2a_newsrovok(srtxt, ovtxt) {
+
+
+  var srlist = []
+  var ovlist = []
+
+  var idsrovlist = []
+
+
+
+
+  var nbline = at2b_srovlist.rows.length
+
+  var SRfound = false;
+  var OVfound = false;
+
+  for (var i = 1; i < nbline; i++) {
+    srlist.push(at2b_srovlist.rows[i].cells[1].querySelector('select').value)
+    ovlist.push(at2b_srovlist.rows[i].cells[3].querySelector('select').value)
+
+    if (!SRfound && at2b_srovlist.rows[i].cells[2].innerText == srtxt)
+      SRfound = srlist.pop()
+
+    if (!OVfound && at2b_srovlist.rows[i].cells[4].innerText == ovtxt)
+      OVfound = ovlist.pop()
+  }
+
+  if (!SRfound) {
+    for (var sri = 1; sri < 9999; sri++) {
+      if (!srlist.includes("SR" + sri))
+        break;
+    }
+    SRfound = "SR" + sri
+  }
+  if (!OVfound) {
+    for (var ovi = 1; ovi < 9999; ovi++) {
+      if (!ovlist.includes("OV" + ovi))
+        break;
+    }
+    OVfound = "OV" + ovi
+  }
+
+  var idsrov = 1;
+  while (at2b_srovlist.querySelector("[data-idsrov='" + idsrov + "']")) {
+    idsrov++;
+
+    if (idsrov >= 9999) {
+      alert("error 1228 : idsrov")
+      break;
+    }
+  }
+
+
+  var row = at2b_srovlist.insertRow();
+  row.dataset.idsrov = idsrov
+  row.dataset.pertinence = 1
+  row.className = "tr_deleteicon"
+
+  var cell0 = row.insertCell();
+  var cell1 = row.insertCell();
+  var cell2 = row.insertCell();
+  var cell3 = row.insertCell();
+  var cell4 = row.insertCell();
+  var cell5 = row.insertCell();
+  var cell6 = row.insertCell();
+  //var cell7 = row.insertCell(6);
+  var cell8 = row.insertCell();
+  var cell9 = row.insertCell();
+
+  cell0.innerHTML = "<span onclick='at2b_deleterow(this)'>×</span>"
+
+  cell1.innerHTML = at2b_selectsrov("SR", SRfound)
+  cell2.innerHTML = srtxt;
+  cell3.innerHTML = at2b_selectsrov("OV", OVfound)
+  cell4.innerHTML = "<div class='td_reducetext'>" + ovtxt + "</div>"
+  cell5.innerHTML = "<div class='mra2do'></div>";
+  cell6.className = "at2b_pertinence";
+  cell6.innerText = "Faible";
+  cell6.style.backgroundColor = "rgb(170, 255, 170)"
+
+  //cell7.className = "at2b_center";
+  //cell7.innerHTML = "<select  onchange='at2c_chinput(this)'><option value='1'>1 - Faible</option><option value='2'>2 - Moyen</option><option value='3'>3 - Elevé</option></select>"
+  cell8.className = "at2b_center";
+  cell8.innerHTML = "<input class='checkboxsrov' type='checkbox' onchange='clickcheck(this);at2b_redraw_graph(this);at2c_redraw()' style='cursor:pointer'/>"
+  cell9.innerHTML = "<textarea style='width:200px;height:90px' onchange='textreea_cleanhtml(this)'></textarea>"
+
+
+
+  var row2c = at2c_srovlist.insertRow();
+  row2c.dataset.idsrov = idsrov
+  row2c.style.display = "none"
+  var cell1 = row2c.insertCell(0);
+  var cell2 = row2c.insertCell(1);
+  var cell3 = row2c.insertCell(2);
+  cell1.innerHTML = srtxt;
+  cell2.innerHTML = "<div class='td_reducetext'>" + ovtxt + "</div>"
+
+  cell3.innerHTML = LNG_at2c_default;
+  cell3.setAttribute('onclick', 'at2c_ch_ER(this)');
+
+  document.querySelectorAll(".mra2do").forEach(e => createmradiv(e));
+
+  at2b_redraw_graph()
+  return row
+}
+
+var LNG_at2c_default = "<span style='color:rgba(227, 57, 74);'>Choisir un événement redouté</span>"
+
+
+function at2c_ch_ER(elm) {
+
+  PPL_clickTD = elm
+
+  show_divcenter()
+  at2c_ch_ERelm.style.display = "block"
+  var ider = elm.closest('tr').dataset.ider
+
+  var HTML = "<tr style='display:none'><td></td><td></td><td></td></tr>";
+  for (var i = 1; i < at1c_table.rows.length; i++) {
+    var tr = at1c_table.rows[i];
+    var tabtr = []
+
+    if (tr.querySelector('.tdmetier p'))
+      var txt = tr.querySelector('.tdmetier p').innerText
+    var g = parseInt(tr.querySelector('.gravitespan').innerText)
+
+    var txt2 = tr.cells.length == 5 ? tr.cells[2].innerText : tr.cells[1].innerText;
+
+    var v = ""
+    if (ider == tr.dataset.ider) v = "checked"
+
+    HTML += "<tr data-ider='" + tr.dataset.ider + "' onclick='clicktdinputradio(this)'><td><input type='radio' name='vmgra' value='' " + v + "/></td>"
+    HTML += "<td>" + txt + "</td><td>" + txt2 + "</td><td style='background-color:" + getcolorfromgravite(g) + ";text-align:center;width:50px;'>" + g + "</td>"
+    HTML += "</tr>"
+  }
+
+  if (at1c_table.rows.length <= 1) {
+    HTML = "<tr><td style='background:var(--colorlight);'>Aucun événement redouté dans l'atelier 1.C</td></tr>";
+  }
+  at2c_ch_ERelmTAble.innerHTML = HTML
+}
+
+
+function at2c_ch_EROK() {
+  hide_divgrey()
+  var tr = at2c_ch_ERelmTAble.querySelector('input:checked').closest('tr')
+
+
+
+  PPL_clickTD.innerText = tr.cells[2].innerText
+  PPL_clickTD.closest('tr').dataset.ider = tr.dataset.ider
+}
+
+function at2b_deleterow(elm) {
+
+  var TR = elm.closest('tr')
+  var idsrov = TR.dataset.idsrov
+
+  at2c_srovlist.querySelector("[data-idsrov='" + idsrov + "']").remove();
+  TR.remove();
+
+  at2b_redraw_graph()
+  at2c_redraw()
+}
+
+
+function at2b_selectsrov(type, id) {
+  var HTML = "<select onchange='at2b_redraw_graph()'>"
+
+  for (var i = 1; i <= 20; i++) {
+    var selected = ""
+
+    if (id == type + i)
+      selected = "SELECTED"
+    HTML += "<option value='" + type + i + "' " + selected + ">" + type + i + "</option>"
+  }
+
+  return HTML + "</select>"
+}
+
+function at2b_selectmra(type, id) {
+  var HTML = "<div style='display:inline-block;background-color: rgba(170, 255, 170);'><select class='select_mra_" + type + "' onchange='at2b_selectmrachange(this)'>"
+
+  for (var i = 1; i <= 3; i++) {
+    var selected = ""
+
+    if (id == type + i)
+      selected = "SELECTED"
+
+    var name = "Motivation"
+    if (type == "r") name = "Ressource";
+
+    var iname = "faible"
+    if (i == 2) iname = "moyen"
+    if (i == 3) iname = "élevé"
+    HTML += "<option value='" + type + i + "' " + selected + ">" + name + " " + iname + "</option>"
+  }
+
+  return HTML + "</select></div>"
+}
+
+
+function at2b_selectmrachange(elm) {
+  var eleminfo = elm.closest(".at2b_mra")
+
+  var t = elm.value.charAt(0)
+  var v = parseInt(elm.value.charAt(1));
+
+  var c = "rgb(170, 255, 170)"
+  if (v == 2) c = "rgb(255, 255, 170)" //c="rgb(246, 231, 66, 0.66)"
+  if (v == 3) c = "rgb(255, 170, 170)"
+  elm.parentElement.style.backgroundColor = c
+
+
+
+  if (t == "m") eleminfo.dataset.m = v
+  if (t == "r") eleminfo.dataset.r = v
+  if (t == "a") eleminfo.dataset.a = v
+
+
+  var m = eleminfo.dataset.m
+  var r = eleminfo.dataset.r
+  //var a = eleminfo.dataset.a
+
+  var pertinencecalc = m * r
+  var pertinence = 1
+  if (pertinencecalc > 2) pertinence = 2
+  if (pertinencecalc > 4) pertinence = 3
+
+  var tr = elm.closest("tr")
+  var perttd = tr.querySelector(".at2b_pertinence")
+
+
+  var c = ["#afa", "#ffa", "#faa"]
+  var pert_text = ["Faible", "Moyen", "Elevé"]
+
+  tr.dataset.pertinence = pertinence
+  perttd.style.backgroundColor = c[pertinence - 1]
+  perttd.innerText = pert_text[pertinence - 1]
+
+
+
+
+  //at2b_chmra_draw(eleminfo)
+  at2b_redraw_graph()
+}
+
+
+function textreea_cleanhtml(elem) {
+  elem.textContent = elem.value.replace("<br>", "\n")
+}
+
+/*
+function at2c_chinput(elem)
+{
+var i = elem.selectedIndex
+document.querySelectorAll("option").forEach(e => e.removeAttribute('selected'));
+elem[i].setAttribute('selected','selected');
+}
+*/
+function clickcheck(elem) {
+  if (elem.checked) {
+    elem.setAttribute('checked', 'checked');
+    elem.checked = true;
+  } else {
+    elem.removeAttribute('checked')
+    elem.checked = false;
+  }
+}
+
+
+
+function createmradiv(elem) {
+  //elem.innerHTML="<div class='at2b_mra_m' onclick='at2b_chmra(this)'><div>Motivation</div></div><div class='at2b_mra_r' onclick='at2b_chmra(this)'><div>Ressources</div></div><div class='at2b_mra_a' onclick='at2b_chmra(this)'><div>Activité</div></div>"
+  elem.innerHTML = at2b_selectmra("m", 1) + at2b_selectmra("r", 2)
+  elem.className = "at2b_mra"
+  elem.dataset.m = "1"
+  elem.dataset.r = "2"
+  elem.dataset.a = "3"
+  //at2b_chmra_draw(elem)
+}
+
+function at2a_choosesrov(elem) {
+  at2a_text_sr.value = elem.querySelectorAll("td")[0].innerText
+  at2a_text_ov.value = elem.querySelectorAll("td")[1].innerText
+}
+
+function showatt(att, elem) {
+  if (elem.classList.contains('disabled')) return;
+
+  layout_content.querySelectorAll(":scope > div").forEach(e => e.style.display = "none");
+  document.querySelectorAll("#" + att).forEach(e => e.style.display = "block");
+
+  document.querySelectorAll('.submenu_activ').forEach(e => e.classList.remove('submenu_activ'));
+  elem.classList.add('submenu_activ')
+
+
+  document.body.className = att.slice(0, 3)
+
+  load_att(att)
+}
+
+function load_att(att) {
+  if (att == "at1a") at1a_load()
+  if (att == "at1bc") at1bc_load()
+  if (att == "at2abc") at2abc_load()
+  if (att == "at3a") at3a_redraw_graph()
+  if (att == "at3b") at3b_redraw()
+  if (att == "at4ab") {
+    at4ab_load()
+  }
+  if (att == "at5abcd") {
+    at5abcd_load()
+  }
+  if (att == "at5ef") {
+    at5ef_load()
+  }
+}
+
+
+function at2abc_load() {
+  document.querySelectorAll('.atelier2open').forEach(e => e.classList.add('submenu_activ'));
+  at2b_redraw_graph()
+}
+
+function at1a_load() {
+  if (at1a_date.value == "")
+    at1a_date.value = new Date().toISOString().split('T')[0];
+}
+
+function at1bc_load() {
+  document.querySelectorAll('.at1bc').forEach(e => e.classList.add('submenu_activ'));
+}
+
+
+function at4ab_load() {
+  document.querySelectorAll('.atelier4open').forEach(e => e.classList.add('submenu_activ'));
+  document.querySelectorAll("#at4a").forEach(e => e.style.display = "block");
+  at4a_bigger_line = ""
+
+  if (document.querySelector('#at4a_canvas'))
+    at4a_canvas.remove(); // prevent bug
+
+  if (!at4a_scenar.dataset.arrow) return;
+
+  var JSONarrows = at4a_scenar.dataset.arrow
+
+  if (!isValidJson(JSONarrows)) {
+    error("JSON ARROW INVALID :" + at4a_scenar.dataset.arrow)
+    return
+  }
+
+
+  at4a_arrowlist = JSON.parse(JSONarrows)
+
+  at4a_showarrow()
+  at4a_refresh_path_at4b()
+  stop_at4amod()
+}
+
+function at5abcd_load() {
+  document.querySelectorAll('.at5abcd').forEach(e => e.classList.add('submenu_activ'));
+  at5a_createTAB()
+}
+
+function at5ef_load() {
+  document.querySelectorAll('.at5ef').forEach(e => e.classList.add('submenu_activ'));
+}
+
+function isValidJson(json) {
+  try {
+    JSON.parse(json);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+
+function at2c_redraw() {
+  at2c_srovlist.querySelectorAll('tr:not(:first-child)').forEach(e => e.style.display = "none");
+
+  var toshow = []
+  at2b_srovlist.querySelectorAll('input[type="checkbox"]:checked').forEach(e => toshow.push(e.closest('tr').dataset.idsrov));
+
+  for (var i = 0; i < toshow.length; i++) {
+    at2c_srovlist.querySelectorAll("[data-idsrov='" + toshow[i] + "']").forEach(e => e.style.display = "table-row");
+  }
+
+
+  at2c_nosrov.style.display = "none"
+  if (!toshow.length)
+    at2c_nosrov.style.display = "block"
+}
+
+/*
+function at2b_chmra(elem)
+{
+var eleminfo=elem.closest(".at2b_mra")
+
+if(elem.className=="at2b_mra_m")	var v=eleminfo.dataset.m
+if(elem.className=="at2b_mra_r")	var v=eleminfo.dataset.r
+if(elem.className=="at2b_mra_a")	var v=eleminfo.dataset.a
+
+v=parseInt(v)
+
+v++
+if(v>3)v=1
+
+if(elem.className=="at2b_mra_m") eleminfo.dataset.m=v
+if(elem.className=="at2b_mra_r") eleminfo.dataset.r=v
+if(elem.className=="at2b_mra_a") eleminfo.dataset.a=v
+
+at2b_chmra_draw(eleminfo)
+at2b_redraw_graph()
+}
+*/
+/*
+function at2b_chmra_draw(elem)
+{
+var m=parseInt(elem.dataset.m)
+var r=parseInt(elem.dataset.r)
+var a=parseInt(elem.dataset.a)
+
+var c=["#afa","#ffa","#faa"]
+var size=["33%","66%","100%"]
+var pert_text=["Faible","Moyen","Elevé"]
+
+var divm = elem.querySelector(".at2b_mra_m").querySelector("div").style
+var divr = elem.querySelector(".at2b_mra_r").querySelector("div").style
+var diva = elem.querySelector(".at2b_mra_a").querySelector("div").style
+
+
+divm.backgroundColor=c[m-1]
+divm.width=size[m-1]
+divr.backgroundColor=c[r-1]
+divr.width=size[r-1]
+diva.backgroundColor=c[a-1]
+diva.width=size[a-1]
+
+var pertinencecalc=m*r
+var pertinence=1
+if(pertinencecalc>2)pertinence=2
+if(pertinencecalc>4)pertinence=3
+
+var tr = elem.closest("tr")
+var perttd=tr.querySelector(".at2b_pertinence")
+
+tr.dataset.pertinence=pertinence
+perttd.style.backgroundColor=c[pertinence-1]
+perttd.innerText=pert_text[pertinence-1]
+}
+*/
+function at2b_redraw_graph() {
+  document.querySelectorAll('.svgadded, .svgaddedclick').forEach(e => e.remove());
+
+
+  at2b_redraw_svg1()
+  at2b_redraw_svg2()
+}
+
+
+
+
+function at2b_redraw_svg1() {
+
+  var tab = document.querySelector('#at2b_srovlist')
+  var nbline = tab.rows.length
+
+  var tabSR = []
+  var infoangleblock = {};
+
+  for (var i = 1; i < nbline; i++) {
+    var txt = tab.rows[i].cells[1].querySelector('select').value
+    if (txt) tabSR.push(txt)
+  }
+  tabSR = [...new Set(tabSR)]; // filter unique
+
+
+
+  var nbcats = tabSR.length
+
+
+  for (var icat = 0; icat < nbcats; icat++) {
+    var tcolor = ["mediumslateblue", "darkorange", "forestgreen", "firebrick", "chocolate"]
+    var color = tcolor[icat % tcolor.length]
+
+    var angle_p_cat = 340 / nbcats
+    blockstart = -35 + icat * angle_p_cat
+
+    infoangleblock[icat] = {}
+    infoangleblock[icat].anglestart = blockstart
+    infoangleblock[icat].anglestop = -blockstart - angle_p_cat
+
+
+    //var textblock = tabSR[icat].querySelector('input').value
+
+    var distance = 240
+    var angler = (-blockstart - 2) / 180 * Math.PI;
+
+    var posx1 = Math.cos(angler) * distance
+    var posy1 = Math.sin(angler) * distance
+
+    var angler = (-blockstart - angle_p_cat + 2) / 180 * Math.PI;
+    var posx2 = Math.cos(angler) * distance
+    var posy2 = Math.sin(angler) * distance
+
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    newLine.setAttribute('class', "svgadded");
+    newLine.setAttribute('id', "curvepp" + icat);
+
+    if (angle_p_cat < 180)
+      newLine.setAttribute('d', 'M ' + posx1 + ' ' + posy1 + ' A ' + distance + ' ' + distance + ' 0 0 0 ' + posx2 + ' ' + posy2 + " L 0 0  L " + posx1 + ' ' + posy1);
+    else
+      newLine.setAttribute('d', 'M ' + posx1 + ' ' + posy1 + ' A ' + distance + ' ' + distance + ' 1 1 0 ' + posx2 + ' ' + posy2 + " L 0 0  L " + posx1 + ' ' + posy1);
+
+    newLine.setAttribute("stroke", color)
+
+    newLine.setAttribute("stroke-width", "3")
+    newLine.setAttribute("stroke-dasharray", "6")
+    newLine.setAttribute("fill", "white")
+    document.getElementById("at2b_svg1").insertBefore(newLine, at2b_svg1_bluecircle);
+
+
+
+    var middle4circle = -blockstart - angle_p_cat / 2
+
+    var angler = middle4circle / 180 * Math.PI;
+    var posx = Math.cos(angler) * 220
+    var posy = Math.sin(angler) * 220
+
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    newLine.setAttribute('class', "svgadded");
+    newLine.setAttribute('x', posx);
+    newLine.setAttribute('y', posy + 6);
+    newLine.setAttribute('text-anchor', "middle");
+    newLine.setAttribute('style', "fill:" + color);
+    newLine.setAttribute('font-size', "20");
+    newLine.setAttribute('font-weight', "bold");
+
+    newLine.appendChild(document.createTextNode(tabSR[icat]))
+
+    document.getElementById("at2b_svg1").append(newLine);
+  }
+
+
+  /// circle
+  for (var icat = 0; icat < nbcats; icat++) {
+    var anglestart = infoangleblock[icat].anglestart
+    var anglestop = infoangleblock[icat].anglestop
+
+    var txtcat = tabSR[icat]
+
+    var nbline = tab.rows.length
+    var OVelem = [];
+    for (var i = 1; i < nbline; i++) {
+      if (tab.rows[i].cells[1].querySelector('select').value == txtcat)
+        OVelem.push(tab.rows[i])
+    }
+
+    for (var i = 0; i < OVelem.length; i++) {
+      var color = "#89C06D"
+      if (OVelem[i].querySelector('.checkboxsrov').checked)
+        color = "#FF3824"
+
+      var OVtxt = OVelem[i].cells[3].querySelector('select').value
+
+      var distance = 250 - 50 * OVelem[i].dataset.pertinence * 1.333
+
+      var space_between_pp = (-anglestop - anglestart) / (OVelem.length + 1)
+
+      var angler = (-space_between_pp - anglestart - space_between_pp * i) / 180 * Math.PI;
+      var posx = Math.cos(angler) * distance
+      var posy = Math.sin(angler) * distance
+
+      var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newLine.setAttribute('class', "svgaddedclick");
+      newLine.setAttribute('onclick', "at2b_clickcircle(this)");
+      newLine.dataset.idsrov = OVelem[i].dataset.idsrov
+      newLine.setAttribute('cx', posx);
+      newLine.setAttribute('cy', posy);
+      newLine.setAttribute('fill', color);
+      newLine.setAttribute('r', 24);
+      document.getElementById("at2b_svg1").append(newLine);
+
+      var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      newLine.setAttribute('class', "svgaddedclick");
+      newLine.setAttribute('onclick', "at2b_clickcircle(this)");
+      newLine.dataset.idsrov = OVelem[i].dataset.idsrov
+      newLine.setAttribute('x', posx);
+      newLine.setAttribute('y', posy + 8);
+      newLine.setAttribute('text-anchor', "middle");
+      newLine.setAttribute('style', "fill:#fff");
+      newLine.setAttribute('font-size', "18");
+      newLine.setAttribute('font-weight', "bold");
+
+      var textNode = document.createTextNode(OVtxt);
+      newLine.appendChild(textNode)
+
+      document.getElementById("at2b_svg1").append(newLine);
+    }
+
+  }
+
+}
+
+
+
+function at2b_clickcircle(elem) {
+  var idsrov = elem.dataset.idsrov
+  var input = document.querySelector('#at2b_srovlist').querySelector("[data-idsrov='" + idsrov + "']").querySelector('input')
+
+  if (input.checked)
+    input.checked = false
+  else
+    input.checked = true
+  at2b_redraw_graph()
+  at2c_redraw();
+}
+
+
+
+
+function at2b_redraw_svg2() {
+
+  var tab = document.querySelector('#at2b_srovlist')
+
+
+  var nbline = tab.rows.length
+
+  var tabOV = []
+  for (var i = 1; i < nbline; i++) {
+    var txt = tab.rows[i].cells[3].querySelector('select').value
+    if (txt) tabOV.push(txt)
+  }
+  tabOV = [...new Set(tabOV)]; // filter unique
+
+
+
+  var nbcats = tabOV.length
+
+
+  for (var icat = 0; icat < nbcats; icat++) {
+    var tcolor = ["mediumslateblue", "darkorange", "forestgreen", "firebrick", "chocolate"]
+    var color = tcolor[icat % tcolor.length]
+
+    var angle_p_cat = 340 / nbcats
+    blockstart = -35 + icat * angle_p_cat
+
+    var dist_b_2bloc = 2
+    if (nbcats < 6) dist_b_2bloc = 20;
+    if (nbcats < 3) dist_b_2bloc = 40;
+    var middle4circle = -blockstart - angle_p_cat / 2
+
+    var distance = 240
+    var angler = (-blockstart - dist_b_2bloc) / 180 * Math.PI;
+
+    var posx1 = Math.cos(angler) * distance
+    var posy1 = Math.sin(angler) * distance
+
+    var angler = (-blockstart - angle_p_cat + dist_b_2bloc) / 180 * Math.PI;
+    var posx2 = Math.cos(angler) * distance
+    var posy2 = Math.sin(angler) * distance
+
+
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    newLine.setAttribute('class', "svgadded");
+    newLine.setAttribute('id', "curvepp" + icat);
+
+    if (angle_p_cat < 180)
+      newLine.setAttribute('d', 'M ' + posx1 + ' ' + posy1 + ' A ' + distance + ' ' + distance + ' 0 0 0 ' + posx2 + ' ' + posy2 + " L 0 0  L " + posx1 + ' ' + posy1);
+    else
+      newLine.setAttribute('d', 'M ' + posx1 + ' ' + posy1 + ' A ' + distance + ' ' + distance + ' 1 1 0 ' + posx2 + ' ' + posy2 + " L 0 0  L " + posx1 + ' ' + posy1);
+
+
+    newLine.setAttribute("fill", "white")
+
+    newLine.setAttribute("stroke", color)
+
+    newLine.setAttribute("stroke-width", "3")
+    newLine.setAttribute("stroke-dasharray", "6")
+
+    document.getElementById("at2b_svg2").insertBefore(newLine, at2b_svg2_bluecircle);
+
+
+
+    var txtcat = tabOV[icat]
+
+
+    var angler = middle4circle / 180 * Math.PI;
+    var posx = Math.cos(angler) * 220
+    var posy = Math.sin(angler) * 220
+
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    newLine.setAttribute('class', "svgadded");
+    newLine.setAttribute('x', posx);
+    newLine.setAttribute('y', posy + 6);
+    newLine.setAttribute('text-anchor', "middle");
+    newLine.setAttribute('style', "fill:" + color);
+    newLine.setAttribute('font-size', "20");
+    newLine.setAttribute('font-weight', "bold");
+
+    newLine.appendChild(document.createTextNode(txtcat))
+
+    document.getElementById("at2b_svg2").append(newLine);
+
+    // circle
+    var anglestart = -35 + icat * angle_p_cat
+    var anglestop = -blockstart - angle_p_cat
+
+    var txtcat = tabOV[icat]
+
+    var nbline = tab.rows.length
+    var SRelem = [];
+    for (var i = 1; i < nbline; i++) {
+      if (tab.rows[i].cells[3].querySelector('select').value == txtcat)
+        SRelem.push(tab.rows[i])
+    }
+
+
+
+    for (var i = 0; i < SRelem.length; i++) {
+      var color = "#89C06D"
+      if (SRelem[i].querySelector('.checkboxsrov').checked)
+        color = "#FF3824"
+
+
+      var SRtxt = SRelem[i].cells[1].querySelector('select').value
+      var distance = 250 - 50 * SRelem[i].dataset.pertinence * 1.333
+
+      var space_between_pp = (-anglestop - anglestart) / (SRelem.length + 1)
+
+      var angler = (-space_between_pp - anglestart - space_between_pp * i) / 180 * Math.PI;
+      var posx = Math.cos(angler) * distance
+      var posy = Math.sin(angler) * distance
+
+      var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newLine.setAttribute('class', "svgaddedclick");
+      newLine.setAttribute('onclick', "at2b_clickcircle(this)");
+      newLine.dataset.idsrov = SRelem[i].dataset.idsrov
+      newLine.setAttribute('cx', posx);
+      newLine.setAttribute('cy', posy);
+      newLine.setAttribute('fill', color);
+      newLine.setAttribute('r', 24);
+      document.getElementById("at2b_svg2").append(newLine);
+
+      var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      newLine.setAttribute('class', "svgaddedclick");
+      newLine.setAttribute('onclick', "at2b_clickcircle(this)");
+      newLine.dataset.idsrov = SRelem[i].dataset.idsrov
+      newLine.setAttribute('x', posx);
+      newLine.setAttribute('y', posy + 8);
+      newLine.setAttribute('text-anchor', "middle");
+      newLine.setAttribute('style', "fill:#fff");
+      newLine.setAttribute('font-size', "18");
+      newLine.setAttribute('font-weight', "bold");
+
+      var textNode = document.createTextNode(SRtxt);
+      newLine.appendChild(textNode)
+
+      document.getElementById("at2b_svg2").append(newLine);
+    }
+
+
+
+  }
+}
+
+/*
+function at2a_option(elem)
+{
+show_divmenuover(elem)
+
+divmenuover.innerHTML="<div onclick='at2a_chsr()'><div style='padding:0 0 0 4px;display: inline-block;font-size: 20px;'>&#x270E;</div> Changer SR</div>"
+divmenuover.innerHTML+="<div onclick='at2a_delete()'><span style='padding:0 10px'>X</span>Supprimer</div>"
+}
+*/
+function at3b_option(elem) {
+  show_divmenuover(elem)
+
+  document.querySelectorAll('.scenarselected').forEach(e => e.classList.remove('scenarselected'));
+  elem.closest('.at3b_sc').classList.add('scenarselected')
+
+  divmenuover.innerHTML = "<div onclick='at3b_add_attackpath(1)'><span style='padding:0 10px'> </span>Ajouter chemin d'attaque</div>"
+  divmenuover.innerHTML += "<div onclick='at3b_add_attackpath(2)'><span style='padding:0 10px'> </span>Ajouter chemin écosystème</div>"
+  divmenuover.innerHTML += "<div onclick='at3b_deletesc()'><span style='padding:0 10px'> </span>Supprimer scénario</div>"
+}
+
+
+
+
+function at3b_deletesc() {
+  document.querySelector('.scenarselected').remove();
+
+  at3b_redraw()
+  divmenuover_clickev(false)
+}
+
+function divmenuover_clickev(e) {
+  if (e != false)
+    if (e.target.closest('#divmenuover') || e.target.closest('.optioncolumn')) return;
+
+  divmenuover.style.display = "none"
+  document.removeEventListener("click", divmenuover_clickev); // Fails
+}
+
+/*
+function at2a_delete()
+{
+var ds = at2a_srovlist.querySelectorAll('input[type="checkbox"]:checked');
+
+var todelete=[]
+for(var i=0;i<ds.length;i++)
+	{
+	todelete.push(ds[i].closest('tr').dataset.idsrov)
+	}
+	
+for(var i=0;i<todelete.length;i++)
+	{
+	document.querySelectorAll("[data-idsrov='"+todelete[i]+"']").forEach(e => e.remove());
+	}
+
+divmenuover_clickev(false)
+}
+*/
+
+/*
+function at2a_chsr()
+{
+divmenuover_clickev(false)
+
+var ds = at2a_srovlist.querySelectorAll('input[type="checkbox"]:checked');
+
+var oldsr = ds[0].closest('tr').dataset.sr
+
+var newsr = prompt("Nouveau SR", oldsr)
+
+if(!newsr)return;
+
+for(var i=0;i<ds.length;i++)
+	{
+
+	ds[i].closest('tr').dataset.sr=newsr
+	ds[i].closest('tr').cells[1].innerText=newsr
+
+	var idsrov = ds[i].closest('tr').dataset.idsrov	
+	at2b_srovlist.querySelector("[data-idsrov='"+idsrov+"']").cells[0].innerText=newsr;
+	}
+}
+*/
+
+function at1b_popupnewsmetier() {
+  show_divcenter()
+  at1b_popupnewmetier.style.display = "block"
+  at1b_newmetier.value = "";
+  at1b_newmetier.focus()
+}
+
+
+function at1b_newsmetierADD() {
+  at1b_newsmetier(at1b_newmetier.value, false)
+  hide_divgrey()
+}
+
+function at1b_newsmetier(value, idvm) {
+  value = value.trim()
+  if (!value) return;
+  var row = at1b_table.insertRow();
+  row.className = "tr_deleteicon"
+
+  if (!idvm) {
+    idvm = 1
+    while (at1b_table.querySelector("[data-idvm='" + idvm + "']")) {
+      idvm++;
+    }
+  }
+  row.dataset.idvm = idvm
+  var cellX = row.insertCell();
+  var cell0 = row.insertCell();
+
+
+  cellX.style.backgroundColor = "transparent";
+  cellX.innerHTML = "<span onclick=\"at1b_deleteVM(this);\">×</span>";
+  cell0.innerHTML = "<span class='spantext' contenteditable='plaintext-only' oninput='at1_ch_VM_name(this)'>" + value + "</span><span class='visiblehover'>✎</span>";
+
+  var rowat1c = at1c_newsmetier(value)
+
+  rowat1c.dataset.idvm = idvm
+
+  return row
+}
+
+
+
+function at1_ch_VM_name(elm) {
+  var txt = elm.innerText;
+  var idvm = elm.closest('tr').dataset.idvm
+
+  var tr_at1c = at1c_table.querySelector("[data-idvm='" + idvm + "']")
+
+  tr_at1c.querySelector('.vmname').innerText = txt
+}
+
+
+
+
+function at1b_deleteVM(elm) {
+  var tr_at1b = elm.closest('tr')
+
+  idvm = tr_at1b.dataset.idvm;
+
+
+  var tr_at1c = at1c_table.querySelector("[data-idvm='" + idvm + "']")
+
+  //AT1c delete bloc
+  if (tr_at1c.cells[1].rowSpan) //need to delete all inner rowspan
+  {
+    var todelete = tr_at1c.cells[1].rowSpan - 1
+    var rowIndex = tr_at1c.rowIndex
+
+    for (var i = 0; i < todelete; i++) {
+      var tr = at1c_table.rows[rowIndex + 1]
+      var ider = tr.dataset.ider
+      at1_removeER(ider)
+      tr.remove()
+    }
+  }
+
+  tr_at1c.remove()
+  tr_at1b.remove()
+}
+
+function at1c_newsmetier(value) {
+  var row = at1c_table.insertRow();
+  row.className = "tr_deleteicon"
+
+  var ider = 1
+  while (at1c_table.querySelector("[data-ider='" + ider + "']")) {
+    ider++;
+  }
+
+  row.dataset.ider = ider
+  var cellX = row.insertCell();
+  var cell0 = row.insertCell();
+  var cell1 = row.insertCell();
+  var cell2 = row.insertCell();
+  var cell3 = row.insertCell();
+
+
+
+  cell0.innerHTML = "<p class='vmname'>" + value + "</p><div onclick='at1c_newsevent(this)' class='iconplus'>+</div>";
+  cell0.rowSpan = 1;
+  cell0.className = "tdmetier";
+  at21c_cell_A_1_2_3(cellX, cell1, cell2, cell3)
+  return row
+}
+
+function at21c_cell_A_1_2_3(cellX, cell1, cell2, cell3) {
+  cellX.innerHTML = "<span onclick='at1c_deleteline(this)'>×</span>";
+
+
+  cellX.style.backgroundColor = "transparent";
+  cell1.innerHTML = "Perte ou destruction des informations d’études et recherches conduisant à un fort impact";
+  cell1.contentEditable = true
+  cell2.innerHTML = "- Missions et services de l’organisme<br/>- Coûts de développement";
+  cell2.contentEditable = true
+  cell3.innerHTML = "<div class='iconedit' style='font-size:xx-large;'>+</div><span class='gravitespan'>4</span>";
+  cell3.className = "tdgravite";
+  cell3.setAttribute('onclick', 'chtdgravite(this)');
+  chtdgravite(cell3)
+}
+
+function chtdgravite(elem) {
+  var elemtd = elem.closest('td')
+  var v = parseInt(elemtd.querySelector('.gravitespan').innerText)
+
+  v++;
+  if (v > 4) v = 1
+
+  elemtd.querySelector('.gravitespan').innerText = v
+  elemtd.style.backgroundColor = getcolorfromgravite(v)
+}
+
+function getcolorfromgravite(v) {
+  if (v == 1) return "#4DC2BE"
+  if (v == 2) return "#F9EF7B"
+  if (v == 3) return "#FFBF7E"
+  if (v == 4) return "#EC7581"
+  return "#aaa"
+}
+
+
+function at1c_newsevent(elem) {
+  if (elem.nodeName == "TD") var td = elem
+  else var td = elem.closest('tr').querySelectorAll('td')[1];
+  var rowIndex = elem.closest('tr').rowIndex
+
+  var ider = 1
+  while (at1c_table.querySelector("[data-ider='" + ider + "']")) {
+    ider++;
+  }
+
+
+
+  var row = at1c_table.insertRow(rowIndex + td.rowSpan);
+  row.className = "tr_deleteicon"
+  row.dataset.ider = ider
+  td.rowSpan++
+  var cellA = row.insertCell();
+  var cell1 = row.insertCell();
+  var cell2 = row.insertCell();
+  var cell3 = row.insertCell();
+
+  at21c_cell_A_1_2_3(cellA, cell1, cell2, cell3)
+  return row;
+}
+
+
+function at3b_new() {
+
+  show_divcenter()
+  at3b_newsscnear.style.display = "block"
+
+  var SROVchecked = []
+  at2b_srovlist.querySelectorAll('input[type="checkbox"]:checked').forEach(e => SROVchecked.push(e.closest('tr').dataset.idsrov));
+
+  var toshow = []
+  for (var i = 0; i < SROVchecked.length; i++) {
+    if (at2c_srovlist.querySelector("[data-idsrov='" + SROVchecked[i] + "']").dataset.ider)
+      toshow.push(SROVchecked[i])
+  }
+
+  var HTML = "<table id='at3b_1table' class='tabletype at2' style='min-width:680px'>"
+  HTML += "<tr style='background-color:#FFB9F6'><td></td><td style='min-width: 140px;'>Source de Risque</td><td>Objectif Visés</td><td>Gravité</td></tr>"
+  for (var i = 0; i < toshow.length; i++) {
+    var rowscenar = document.querySelector('#at2b_srovlist').querySelector("[data-idsrov='" + toshow[i] + "']")
+    var idsrov = rowscenar.dataset.idsrov
+    log(idsrov)
+    var ider = at2c_srovlist.querySelector("[data-idsrov='" + idsrov + "']").dataset.ider
+    var g = 0
+    if (ider)
+      g = at1c_table.querySelector("[data-ider='" + ider + "']").querySelector('.gravitespan').innerText
+    g = parseInt(g)
+    HTML += "<tr data-ider='" + ider + "' style='background-color:#FFF' onclick='clicktdinputradio(this)' style='cursor:pointer'><td><input type='radio'name='srov' value='' /></td><td>" + rowscenar.cells[2].innerText + "</td><td>" + rowscenar.cells[4].innerText + "</td><td style='background-color:" + getcolorfromgravite(g) + ";text-align:center;'>" + g + "</td></tr>"
+  }
+  HTML += "</table>"
+
+  at3b_nosrov.style.display = "none"
+  at3b_addbutton.innerText = "Ajouter"
+  if (!toshow.length) {
+    at3b_nosrov.style.display = "block"
+    at3b_addbutton.innerText = "Ajouter scénario sans SR/OV"
+    HTML = "" // empty
+  }
+
+
+  at3b_1.innerHTML = HTML
+
+
+  select_first_radio(at3b_1table)
+}
+
+
+function select_first_radio(container) {
+  container.querySelector('input').checked = true
+}
+
+function clicktdinputradio(tr) {
+  tr.querySelector('input').checked = true;
+}
+
+
+function at3b_add(from_save) {
+  var txt1 = "Attaquant"
+  var txt2 = "Chiffrement des données contre rançon"
+  var txtOV = "SOCIÉTÉ"
+  var icon1 = "testSR"
+  var icon2 = "OVOV"
+  var gravite = 1
+  var attackpath = []
+  document.querySelectorAll('.scenarselected').forEach(e => e.classList.remove('scenarselected'));
+
+
+  if (from_save) {
+    var fs = JSON.parse(from_save)
+    txt1 = fs.txt1
+    txt2 = fs.txt2
+    txtOV = fs.ov
+    icon1 = fs.icon1
+    icon2 = fs.icon2
+    gravite = fs.gravite
+    attackpath = fs.attackpath
+  } else {
+    if (at3b_1.querySelector('input:checked')) {
+      var row = at3b_1.querySelector('input:checked').closest('tr')
+      txt1 = row.cells[1].innerText
+      txt2 = row.cells[2].innerText
+      gravite = row.cells[3].innerText
+
+      var ider = row.dataset.ider
+
+      var TRat1c = at1c_table.querySelector("[data-ider='" + ider + "']")
+
+      for (var i = TRat1c.rowIndex; i > 0; i--) //SEARCH VM name
+      {
+        var TR_search = at1c_table.rows[i]
+        if (TR_search.cells.length == 5) {
+          txtOV = TR_search.cells[1].querySelector('p').innerText
+          break;
+        }
+      }
+    }
+  }
+
+
+  var HTML = "<div class='at3b_sc scenarselected' style='position:relative'>"
+  HTML += "<div class='optioncolumn' style='transform:rotate(270deg) translateY(-5px);cursor:pointer;font-size:20px;position:absolute;left:20px;top:10px' onmousedown='at3b_option(this)'><b>...</b></div>"
+  HTML += "<div class='at3b_sc_left'> </div>"
+  HTML += "<div class='at3b_sc_center'> </div>"
+  HTML += "<div class='at3b_sc_right'> </div>"
+  HTML += "</div>"
+
+  at3b_list.innerHTML += HTML
+
+
+  document.querySelector('.scenarselected').dataset.attackinfo = JSON.stringify({
+    icon1: icon1,
+    txt1: txt1,
+    txt2: txt2,
+    ov: txtOV,
+    gravite: gravite,
+    icon2: icon2,
+    attackpath: attackpath
+  })
+
+
+  if (from_save) // from backup, we dont need the rest
+    return
+
+  hide_divgrey()
+  at3b_add_attackpath(1)
+}
+
+function at3b_add_attackpath(x) {
+  var divsc = document.querySelector('.scenarselected')
+
+  var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+
+  if (scenarobj.attackpath.length > 4) return; // max : 5
+
+  var text = "Chemin d’attaque"
+
+  var path = {
+    type: "XXX",
+    text: text,
+    risk: 1,
+    pp1: ""
+  }
+
+  if (x == 1) path.type = "direct"
+  if (x == 2) {
+    path.type = "eco";
+    path.pp1 = "Partie prenante";
+  }
+
+  scenarobj.attackpath.push(path)
+  divsc.dataset.attackinfo = JSON.stringify(scenarobj)
+  at3b_redraw()
+  divmenuover_clickev(false)
+}
+
+
+
+
+function at3b_redraw() {
+  at3b_redraw_graph()
+  at3b_redraw_synthese()
+}
+
+function at3b_redraw_synthese() {
+  var scenars = document.querySelectorAll('.at3b_sc')
+
+  at3b_synthese.style.display = (scenars.length) ? "block" : "none";
+  document.querySelectorAll("#at3b_table .trdata").forEach(e => e.remove());
+
+
+
+  for (var i = 0; i < scenars.length; i++) {
+    var divsc = scenars[i]
+    var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+
+
+    var row = at3b_table.insertRow();
+    row.className = "trdata"
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+
+
+    cell1.innerHTML = scenarobj.txt1;
+    cell2.innerHTML = scenarobj.txt2;
+
+    cell4.innerHTML = scenarobj.gravite + gravite2text(scenarobj.gravite);
+    cell4.className = "at3b_table_tdgravite";
+    cell4.style.backgroundColor = getcolorfromgravite(scenarobj.gravite);
+
+    // PATH
+    for (var iatt = 0; iatt < scenarobj.attackpath.length; iatt++) {
+      var sc = scenarobj.attackpath[iatt]
+
+      var text = sc.text
+      if (sc.text3) text = sc.text3
+      cell3.innerHTML += "<p style='white-space: pre-wrap'>- " + text + "</p>"
+
+
+    }
+  }
+  //at3b_synthese
+
+}
+
+function gravite2text(x) {
+  x = parseInt(x)
+  var t = "Faible"
+  if (x == 2) t = "Moyen"
+  if (x == 3) t = "Grave"
+  if (x == 4) t = "Critique"
+
+  return "<br/><span style='font-size:smaller'>" + t + "</span>"
+}
+
+function at3b_redraw_graph() {
+  document.querySelectorAll('.scadded').forEach(e => e.remove());
+
+  var scenars = document.querySelectorAll('.at3b_sc')
+
+  for (var i = 0; i < scenars.length; i++) {
+    var divsc = scenars[i]
+
+    var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+
+
+
+    //text center
+    divsc.querySelector('.at3b_sc_center').innerHTML += "<div class='scadded typeeco' style='font-weight:bold;color:#002742;top:10px;position: absolute;z-index:50;width:100%;text-align:center;'>ÉCOSYSTÈME</div>"
+
+    //text right
+    divsc.querySelector('.at3b_sc_right').innerHTML += "<div class='scadded editicon typeov' contenteditable='plaintext-only' style='font-weight:bold;color:#002742;top:10px;position: absolute;z-index:50;width:100%;text-align:center;'>" + scenarobj.ov + "</div>"
+
+    //SOURCE
+    divsc.innerHTML += "<div class='scadded' style='border:4px solid #00A7A2;border-radius:100px;width:76px;height:76px;left:59px;top:161px;position: absolute;z-index:50;background-color:#fff;text-align: center;  line-height: 80px;'>SR</div>"
+    divsc.innerHTML += "<div class='scadded' style='width:105px;height:140px;left:57px;top:140px;position: absolute;z-index:40;background-color:#fff'></div>"
+    //SOURCE txt
+    divsc.innerHTML += "<div class='scadded editicon typetxt1' contenteditable='plaintext-only' style='font-weight:bold;color:#002742;left:20px;top:250px;width:160px;position: absolute;z-index:60;text-align:center;'>" + scenarobj.txt1 + "</div>"
+
+
+    //Objectif
+    divsc.innerHTML += "<div class='scadded' style='border:4px solid #E3394A;border-radius:100px;width:100px;height:100px;left:825px;top:148px;position: absolute;z-index:50;background-color:#fff;text-align: center;  line-height: 100px;'>OV</div>"
+    divsc.innerHTML += "<div class='scadded' style='width:120px;height:170px;left:795px;top:118px;position: absolute;z-index:40;background-color:#99DCDA'></div>"
+    //Objectif txt
+    divsc.innerHTML += "<div class='scadded editicon typetxt2' contenteditable='plaintext-only' style='font-weight:bold;color:#E3394A;left:892px;bottom:260px;width:134px;position: absolute;z-index:60;text-align:center;font-size:12px'>" + scenarobj.txt2 + "</div>"
+
+    // 4 blocs cible
+    divsc.innerHTML += "<div class='scadded' style='border:2px solid #E3394A;width:0;height:25px;left:877px;top:136px;position: absolute;z-index:60;'></div>"
+    divsc.innerHTML += "<div class='scadded' style='border:2px solid #E3394A;width:0;height:25px;left:877px;top:240px;position: absolute;z-index:60;'></div>"
+    divsc.innerHTML += "<div class='scadded' style='border:2px solid #E3394A;width:25px;left:811px;top:200px;position: absolute;z-index:60;'></div>"
+    divsc.innerHTML += "<div class='scadded' style='border:2px solid #E3394A;width:25px;left:917px;top:200px;position: absolute;z-index:60;'></div>"
+
+    // pathpos
+    var nbattackpath = scenarobj.attackpath.length
+
+    if (nbattackpath > 5) nbattackpath = 5;
+
+    var postop = []
+    if (nbattackpath == 1) postop.push(200)
+    if (nbattackpath == 2) postop.push(80, 320)
+    if (nbattackpath == 3) postop.push(70, 200, 330)
+    if (nbattackpath == 4) postop.push(50, 100, 300, 360)
+    if (nbattackpath == 5) postop.push(50, 100, 200, 300, 370)
+
+    divsc.dataset.postop = postop
+
+
+    // Fleche haut,bas
+    if (nbattackpath >= 2) {
+      divsc.innerHTML += "<div class='scadded' style='left:91px;top:135px;display : inline-block; height : 0; width : 0; border-top : 19px solid #E3394A; border-right : 11px solid transparent; border-left : 11px solid transparent;position: absolute;z-index:80'></div>"
+      divsc.innerHTML += "<div class='scadded' style='left:91px;top:274px;display : inline-block; height : 0; width : 0; border-right : 11px solid transparent; border-bottom : 19px solid #E3394A; border-left : 11px solid transparent;position: absolute;z-index:80'></div>"
+    }
+
+    // Fleche SR centre
+    if (nbattackpath == 1 || nbattackpath == 3 || nbattackpath == 5)
+      divsc.innerHTML += "<div class='scadded' style='left:150px;top:191px;display : inline-block; height : 0; width : 0;  border-top : 11px solid transparent; border-right : 19px solid #E3394A; border-bottom : 11px solid transparent;position: absolute;z-index:80'></div>"
+
+
+
+
+    // PATH
+    for (var iatt = 0; iatt < nbattackpath; iatt++) {
+      var sc = scenarobj.attackpath[iatt]
+
+      var h = (200 - postop[iatt])
+
+
+      var fleche = false
+
+
+      var top = postop[iatt]
+      var toptext = top;
+      if (top >= 200) {
+        top = 200
+        h = postop[iatt] - 200
+        var b = "border-top:0px;"
+        toptext = 200 + h
+        fleche = "bas"
+      } else {
+        var b = "border-bottom:0px;"
+        fleche = "haut"
+      }
+
+      if (top == 200 && h == 0) fleche = "centre"
+
+      if (sc.type == "direct" && fleche == "haut") divsc.innerHTML += "<div class='scadded' style='left:868px;top:110px;display : inline-block; height : 0; width : 0; border-top : 19px solid #E3394A; border-right : 11px solid transparent; border-left : 11px solid transparent;position: absolute;z-index:80'></div>"
+      if (sc.type == "direct" && fleche == "centre") divsc.innerHTML += "<div class='scadded' style='left:786px;top:191px;display : inline-block; height : 0; width : 0;border-top : 11px solid transparent; border-bottom : 11px solid transparent; border-left : 19px solid #E3394A;position: absolute;z-index:80'></div>"
+      if (sc.type == "direct" && fleche == "bas") divsc.innerHTML += "<div class='scadded' style='left:868px;top:274px;display : inline-block; height : 0; width : 0; border-right : 11px solid transparent; border-bottom : 19px solid #E3394A; border-left : 11px solid transparent;position: absolute;z-index:80'></div>"
+
+      if (sc.type == "direct")
+        divsc.innerHTML += "<div class='scadded' style='border:4px solid #00A7A2;" + b + ";height:" + h + "px;border-radius:10px;width:773px;left:100px;top:" + top + "px;position: absolute;z-index:" + (20 - iatt) + "'></div>" // Fleche SR centre
+
+      if (sc.type == "eco")
+        divsc.innerHTML += "<div class='scadded' style='border:4px solid #00A7A2;" + b + ";height:" + h + "px;border-radius:10px;border-right:0;width:320px;left:100px;top:" + top + "px;position: absolute;z-index:" + (20 - iatt) + "'></div>"
+
+
+      if (sc.pp1 != "") {
+        var HTMLpp = "<div class='scadded' data-ppuid='SCPPUID' style='left:" + 195 + "px;top:" + (toptext - 20) + "px;width:120px;height:40px;z-index:60;position:absolute;background-color:#CCEDEC;line-height: 100px;text-align: center;white-space: nowrap;'>"
+        HTMLpp += "<div class='scadded' style='left:25px;top:0px;width:70px;height:40px;position:absolute;background-color:#fff'>"
+
+
+        HTMLpp += "<div class='scadded' style='left:-30px;top:10px;display : inline-block; height : 0; width : 0;border-top : 11px solid transparent; border-bottom : 11px solid transparent; border-left : 19px solid #E3394A;position: absolute;z-index:80'></div>"
+        if (sc.type == "direct")
+          HTMLpp += "<div class='scadded' style='right:-28px;top:10px;display : inline-block; height : 0; width : 0;  border-top : 11px solid transparent; border-right : 19px solid #E3394A; border-bottom : 11px solid transparent;position: absolute;z-index:80'></div>"
+        HTMLpp += "</div>" + sc.pp1 + "</div>"
+        divsc.querySelector('.at3b_sc_center').innerHTML += HTMLpp
+      }
+
+      divsc.querySelector('.at3b_sc_left').innerHTML += "<div class='optioncolumn scadded autohide' style='position:absolute;transform:rotate(270deg) translateY(-5px);cursor:pointer;font-size:20px;right:0;top:" + (toptext - 25) + "px;z-index:200' onmousedown='at3b_chpath(this," + iatt + ")'><b>...</b></div>"
+
+      if (!sc.pp1)
+        divsc.innerHTML += "<div class='scadded editicon typetext' data-iatt=" + iatt + " contenteditable='plaintext-only' style='font-size:14px;left:300px;top:" + (toptext - 18) + "px;position: absolute;z-index:" + (50 - iatt) + ";color:#001784;width:300px;text-align:center;'>" + sc.text + "</div>"
+      else {
+        divsc.innerHTML += "<div class='scadded editicon typetext' data-iatt=" + iatt + " contenteditable='plaintext-only' style='font-size:14px;left:205px;bottom:" + (400 - toptext) + "px;position: absolute;z-index:" + (50 - iatt) + ";color:#001784;width:180px;text-align: center;'>" + sc.text + "</div>"
+        if (sc.text2)
+          divsc.innerHTML += "<div class='scadded editicon typetext2' data-iatt=" + iatt + " contenteditable='plaintext-only' style='font-size:14px;left:475px;bottom:" + (400 - toptext) + "px;position: absolute;z-index:" + (50 - iatt) + ";color:#001784;width:130px;text-align: center;'>" + sc.text2 + "</div>"
+      }
+    }
+    // add event on every "editicon"
+    divsc.querySelectorAll('.editicon').forEach(e => e.addEventListener('input', function() {
+      change_text(e)
+    }));
+  }
+}
+
+
+function change_text(elm) {
+  var divsc = elm.closest('.at3b_sc')
+  var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+  var newtxt = elm.innerText
+  //icon1:icon1,txt1:txt1,txt2:txt2,ov:txtOV,gravite:gravite, icon2:icon2, attackpath:attackpath
+  var iatt = -1;
+  if (elm.dataset.iatt)
+    iatt = elm.dataset.iatt
+
+  log(elm)
+  var t = ""
+  if (elm.classList.contains('typeeco')) t = "typeeco"
+  if (elm.classList.contains('typeov'))
+    scenarobj.ov = newtxt
+  if (elm.classList.contains('typetxt1'))
+    scenarobj.txt1 = newtxt
+  if (elm.classList.contains('typetxt2'))
+    scenarobj.txt2 = newtxt
+  if (elm.classList.contains('typetext'))
+    scenarobj.attackpath[iatt].text = newtxt
+  if (elm.classList.contains('typetext2'))
+    scenarobj.attackpath[iatt].text2 = newtxt
+
+
+  log(scenarobj.attackpath[iatt])
+
+  divsc.dataset.attackinfo = JSON.stringify(scenarobj)
+  at3b_redraw_synthese()
+}
+
+function at3b_chpath(elm, idpath) {
+  show_divmenuover(elm)
+
+  document.querySelectorAll('.scenarselected').forEach(e => e.classList.remove('scenarselected'));
+  elm.closest('.at3b_sc').classList.add('scenarselected')
+
+  divmenuover.innerHTML = "<div onclick='at3b_chpath2(5," + idpath + ")'><span style='padding:0 10px'>&#9998;</span>Partie prenante</div>"
+
+  divmenuover.innerHTML += "<div onclick='at3b_chpath2(2," + idpath + ")'><span style='padding:0 10px'>&#11165;</span>Monter</div>"
+  divmenuover.innerHTML += "<div onclick='at3b_chpath2(3," + idpath + ")'><span style='padding:0 10px'>&#11167;</span>Descendre</div>"
+  divmenuover.innerHTML += "<div onclick='at3b_chpath2(4," + idpath + ")'><span style='padding:0 10px;font-size:20px;font-weight: bold;'>×</span>Supprimer</div>"
+}
+
+function at3b_chpath2(x, idpath) {
+  divmenuover.style.display = "none"
+  document.removeEventListener("click", divmenuover_clickev);
+
+
+  var divsc = document.querySelector('.scenarselected')
+  var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+
+
+  if (x == 2 && idpath == 0) return;
+  if (x == 3 && idpath >= scenarobj.attackpath.length - 1) return;
+
+
+  if (x == 2) scenarobj.attackpath = move_elem_in_array(scenarobj.attackpath, idpath, idpath - 1)
+  if (x == 3) scenarobj.attackpath = move_elem_in_array(scenarobj.attackpath, idpath, idpath + 1)
+  if (x == 4) {
+    delete(scenarobj.attackpath[idpath]);
+    scenarobj.attackpath = scenarobj.attackpath.filter(val => val)
+  }
+  if (x == 5) {
+    at3b_add_pp(idpath);
+    return
+  }
+
+  divsc.dataset.attackinfo = JSON.stringify(scenarobj)
+
+
+  at3b_redraw()
+}
+
+
+
+
+function at3b_add_pp(idpath) {
+
+  show_divcenter()
+  at3b_addpp.style.display = "block"
+
+  var pps = document.querySelectorAll('.at3_pp')
+
+  var tabpps = []
+  for (var i = 0; i < pps.length; i++) {
+    var pp = pps[i]
+    tabpps.push([parseFloat(pp.dataset.menace), pp.querySelector('input').value, pp.dataset.ppuid]);
+  }
+
+  tabpps.sort(function(a, b) {
+    return b[0] - a[0]
+  }) // sort by menace
+
+  at3b_nosrov2.style.display = "none"
+  if (!tabpps.length) //demo Pp
+  {
+    at3b_nosrov2.style.display = "block"
+    return;
+  }
+
+  var HTML = "<table class='tabletype' style='border-collapse: collapse;width:400px'><tr><td></td><td style='text-align:left;'>Partie prenante</td><td style='text-align:left;'>Menace</td></tr>"
+  for (var i = 0; i < tabpps.length; i++) {
+    HTML += "<tr onmousedown='clicktdinputradio(this)' data-idpath='" + idpath + "' data-ppuid='" + tabpps[i][2] + "'style='cursor:pointer'><td><input type='radio'name='scenar' value='' /></td><td>" + tabpps[i][1] + "</td><td style='background-color:" + get_menacecolor(parseFloat(tabpps[i][0])) + "'> " + tabpps[i][0] + "</td></tr>"
+  }
+  HTML += "</table>"
+
+  at3b_addpp_1.innerHTML = HTML
+  divmenuover_clickev(false)
+}
+
+
+
+function at3b_addppok() {
+  hide_divgrey()
+
+
+  var checked = at3b_addpp_1.querySelector('input:checked')
+  if (!checked) return;
+
+  var row = checked.closest('tr')
+  var divsc = document.querySelector('.scenarselected')
+
+
+  var idpath = row.dataset.idpath
+  var ppuid = row.dataset.ppuid
+
+  var txtPP = row.cells[1].innerText
+  var risk = row.cells[2].innerText
+  var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+
+  if (!txtPP) txtPP = "";
+  scenarobj.attackpath[idpath].pp1 = txtPP
+  scenarobj.attackpath[idpath].risk = risk
+  scenarobj.attackpath[idpath].ppuid = ppuid
+
+  divsc.dataset.attackinfo = JSON.stringify(scenarobj)
+
+
+  at3b_redraw()
+}
+
+
+
+
+function move_elem_in_array(array, from, to) {
+  if (to === from) return array;
+
+  var target = array[from];
+  var i = to < from ? -1 : 1;
+
+  for (var k = from; k != to; k += i) {
+    array[k] = array[k + i];
+  }
+  array[to] = target;
+  return array;
+}
+
+
+
+
+function at3c_newsec() {
+
+  show_divcenter()
+  at3c_newsmesurediv.style.display = "block"
+
+
+
+  var scenars = document.querySelectorAll('.at3b_sc')
+  var at3c_nopp_show = 0;
+
+  var selectfirst = true
+  at3c_table_before.querySelectorAll('tr:not(:first-child)').forEach(e => e.remove());
+
+  for (var i = 0; i < scenars.length; i++) {
+    var divsc = scenars[i]
+
+    var scenarobj = JSON.parse(divsc.dataset.attackinfo)
+
+    var nbattackpath = scenarobj.attackpath.length
+
+
+    // PATH
+    for (var iatt = 0; iatt < nbattackpath; iatt++) {
+      var sc = scenarobj.attackpath[iatt]
+
+      if (sc.pp1) {
+        at3c_nopp_show = 1;
+        var row = at3c_table_before.insertRow();
+        row.className = "trdata"
+        row.dataset.ppuid = sc.ppuid
+        row.setAttribute('onclick', 'clickrow_at3c_table_before(this)');
+
+        if (selectfirst) {
+          row.className += " selected";
+          selectfirst = false;
+        }
+
+        var cell1 = row.insertCell();
+        var cell2 = row.insertCell();
+        var cell3 = row.insertCell();
+
+
+        cell1.innerHTML = sc.pp1 ?? "";
+        cell2.innerHTML = sc.text;
+        cell3.innerHTML = sc.risk;
+      }
+    }
+  }
+
+  at3c_nopp.style.display = (at3c_nopp_show) ? "none" : "block";
+  at3c_newsec_button.innerText = (at3c_nopp_show) ? "Ajouter" : "Ok";
+}
+
+
+
+function clickrow_at3c_table_before(elem) {
+  var d = at3c_table_before.querySelectorAll('.selected')
+
+  d.forEach(e => e.style.backgroundColor = "")
+  d.forEach(e => e.classList.remove('selected'))
+
+
+  elem.classList.add('selected')
+  elem.style.backgroundColor = "#ADC8C7"
+
+
+  elem.closest('tr').classList.add('selected')
+}
+
+
+function at3c_newsec_add() {
+  hide_divcenter()
+  if (at3c_nopp.style.display == "block") return; // empty
+
+  var row = at3c_table.insertRow();
+  row.className = "trdata tr_deleteicon"
+
+  row.setAttribute('onclick', 'at3c_edit(this)');
+  var cell0 = row.insertCell();
+  var cell1 = row.insertCell();
+  var cell2 = row.insertCell();
+  var cell3 = row.insertCell();
+  var cell4 = row.insertCell();
+  var cell5 = row.insertCell();
+
+
+  //cell0.innerHTML = "<input type='checkbox' onclick='event.stopPropagation();' />";
+  //cell0.className = "optioncolumn";
+  cell0.innerHTML = "<span onclick=\"this.closest('tr').remove();event.stopPropagation();\">×</span>"
+
+
+
+
+  cell3.innerHTML = "<b></b><span></span>";
+  cell3.dataset.detail = ""
+
+
+
+  var trselected = at3c_table_before.querySelector('.selected')
+
+  if (trselected) {
+    var tr = trselected.closest('tr')
+    row.dataset.ppuid = tr.dataset.ppuid
+
+    cell1.innerHTML = tr.cells[0].innerText
+    cell2.innerHTML = tr.cells[1].innerText
+
+    cell4.innerHTML = tr.cells[2].innerText
+    cell5.innerHTML = tr.cells[2].innerText
+  } else {
+    row.dataset.ppuid = 0
+
+    cell1.innerHTML = ""
+    cell2.innerHTML = ""
+
+    cell4.innerHTML = ""
+    cell5.innerHTML = ""
+  }
+}
+/*
+function at3c_option(elem)
+{
+show_divmenuover(elem)
+divmenuover.innerHTML="<div onclick='at3c_delete()'><span style='padding:0 10px'>×</span>Supprimer</div>"
+}
+*/
+function show_divmenuover(elem) {
+  document.addEventListener("click", divmenuover_clickev);
+
+  divmenuover.style.left = elem.getBoundingClientRect().right - 12 + "px"
+  divmenuover.style.top = window.scrollY + elem.getBoundingClientRect().bottom + "px"
+  divmenuover.style.display = "block"
+}
+
+
+
+
+function at1c_deleteline(elm) {
+
+  var tr = elm.closest('tr')
+  var nb_cell_full = at1c_table.querySelector('tr').cells.length
+
+
+  var ider = tr.dataset.ider
+  at1_removeER(ider)
+
+  var is_first = (tr.cells.length == nb_cell_full)
+  var is_alone = (tr.querySelectorAll('td')[1].rowSpan == 1)
+  if (is_first && is_alone) // first & alone -> delete
+  {
+    tr.remove()
+
+    //delete at1b line
+    var idvm = tr.dataset.idvm
+    var tr_at1b = at1b_table.querySelector("[data-idvm='" + idvm + "']")
+    tr_at1b.remove()
+
+    return
+  }
+
+  if (is_first && !is_alone) // first of block -> transfert text from next line, delete next line
+  {
+    var trnext = tr.nextSibling
+
+    tr.cells[2].innerText = trnext.cells[1].innerText
+    tr.cells[3].innerText = trnext.cells[2].innerText
+    tr.querySelector('.gravitespan').innerText = trnext.querySelector('.gravitespan').innerText;
+    tr.cells[4].style.backgroundColor = trnext.cells[3].style.backgroundColor
+    tr.querySelectorAll('td')[1].rowSpan--
+    trnext.remove()
+
+    return
+  }
+
+  if (!is_first) // a line in block
+  {
+    var tr_changerowspan = tr
+    while (tr_changerowspan = tr_changerowspan.previousSibling) // find the first tr in bloc and change rowSpan
+    {
+      if (tr_changerowspan.querySelectorAll('td')[1].rowSpan != 1) {
+        tr_changerowspan.querySelectorAll('td')[1].rowSpan--
+        break;
+      }
+    }
+
+    tr.remove()
+    return
+  }
+}
+
+
+function at1_removeER(ider) {
+  at2c_srovlist.querySelectorAll("[data-ider='" + ider + "']").forEach(el => {
+    el.dataset.ider = 0;
+    el.cells[2].innerHTML = LNG_at2c_default;
+  })
+}
+
+/*
+function at3c_delete()
+{
+at3c_table.querySelectorAll('input[type="checkbox"]:checked').forEach(e => e.closest('tr').remove())
+divmenuover_clickev(false)
+}
+*/
+function at3c_edit(tr) {
+
+  show_divcenter()
+  at3c_editmesurediv.style.display = "block"
+
+  at3c_table.querySelectorAll('.trselected').forEach(e => e.classList.remove('trselected'));
+  tr.classList.add('trselected');
+
+
+
+
+  at3b_new_descr.value = tr.querySelector('.at3c_desc') ? tr.querySelector('.at3c_desc').innerText : "";
+  at3b_new_detail.value = tr.querySelector('.at3b_new_detail') ? tr.querySelector('.at3b_new_detail').innerText : "";
+
+  // DATA FROM at 3.A
+  var ppuid = tr.dataset.ppuid
+  var PP = document.querySelector("[data-ppuid='" + ppuid + "']")
+
+
+  var PPname = PP ? PP.querySelector('input').value : tr.cells[2].innerText
+
+  var d = PP ? PP.dataset.dep : 2
+  var p = PP ? PP.dataset.pen : 2
+  var m = PP ? PP.dataset.mat : 2
+  var c = PP ? PP.dataset.conf : 2
+
+  at3b_new_pp.value = PPname
+
+  at3b_old_d.innerText = d
+  at3b_old_p.innerText = p
+  at3b_old_m.innerText = m
+  at3b_old_c.innerText = c
+
+
+  at3b_new_d.value = tr.dataset.new_d ?? d
+  at3b_new_p.value = tr.dataset.new_p ?? p
+  at3b_new_m.value = tr.dataset.new_m ?? m
+  at3b_new_c.value = tr.dataset.new_c ?? c
+
+  var vfinal = (d * p) / (m * c)
+  at3b_old_calc.innerText = Math.round(vfinal * 100) / 100
+  at3c_recalc()
+}
+
+
+function at3c_recalc() {
+  var vfinal = (at3b_new_d.value * at3b_new_p.value) / (at3b_new_m.value * at3b_new_c.value)
+  at3b_new_calc.innerText = Math.round(vfinal * 100) / 100
+}
+
+
+
+function at3c_edit_ok() {
+  var tr = at3c_table.querySelector('.trselected')
+
+  var new_d = at3b_new_d.value
+  var new_p = at3b_new_p.value
+  var new_m = at3b_new_m.value
+  var new_c = at3b_new_c.value
+
+  tr.dataset.new_d = new_d
+  tr.dataset.new_p = new_p
+  tr.dataset.new_m = new_m
+  tr.dataset.new_c = new_c
+
+
+  var tabresult = []
+
+  if (at3b_old_d.innerText != new_d) tabresult.push("D:" + at3b_old_d.innerText + "➜" + new_d)
+  if (at3b_old_p.innerText != new_p) tabresult.push("P:" + at3b_old_p.innerText + "➜" + new_p)
+  if (at3b_old_m.innerText != new_m) tabresult.push("M:" + at3b_old_m.innerText + "➜" + new_m)
+  if (at3b_old_c.innerText != new_c) tabresult.push("C:" + at3b_old_c.innerText + "➜" + new_c)
+
+  var txtresult = ""
+  if (tabresult) {
+    txtresult = "(" + tabresult.join(", ") + ")"
+  }
+
+  tr.cells[1].innerText = at3b_new_pp.value
+
+
+  tr.cells[3].innerHTML = "<span style='font-weight:bold;' class='at3c_desc'>" + at3b_new_descr.value + "</span><span style='font-weight:bold;'> " + txtresult + "</span><br/><span class='at3c_detail'>" + at3b_new_detail.innerHTML + "</span>"
+
+
+  tr.cells[4].innerText = at3b_old_calc.innerText
+  tr.cells[5].innerText = at3b_new_calc.innerText //at3b_new_menaceres.value
+
+
+  hide_divcenter()
+}
+
+function chinput(elem) {
+  elem.setAttribute('value', elem.value)
+} // utile pour sauvegarde
+
+
+function at4a_modclick() {
+  if (at4a_buttonmod.innerText == "OK")
+    stop_at4amod()
+  else start_at4amod()
+}
+
+
+
+
+function start_at4amod() {
+  at4a_buttonmod.innerText = "OK"
+  at4a_scenar.classList.add('at4a_scenar_mod');
+  at4a_tdmod.style.visibility = "visible"
+  redraw_newbulle()
+}
+
+
+function stop_at4amod() {
+  at4a_buttonmod.innerText = "Modifier"
+  at4a_scenar.classList.remove('at4a_scenar_mod');
+  at4a_bulleinfo.style.visibility = "hidden"
+  at4a_but_click_target.style.visibility = "hidden"
+  at4a_tdmod.style.visibility = "hidden"
+
+  document.querySelectorAll('.bulledot').forEach(e => e.remove('bulledot'));
+
+  var maxY = 200;
+  document.querySelectorAll('.bulle:not(.newbulle)').forEach(el => {
+    const y = el.offsetTop + el.offsetHeight
+    if (y > maxY) maxY = y;
+  });
+
+  document.querySelectorAll('.scenarcont').forEach(el => {
+    el.style.height = maxY - 20 + "px"
+  });
+
+
+  release_arrow()
+
+  at4a_select(false)
+  at4a_showarrow();
+}
+
+
+
+
+function click_bulledot(elm, e) {
+
+  at4b_clean_overpath()
+
+  var arrowTool = installArrowCanvasFollowMouse();
+  arrowTool.startFromElement(e.currentTarget);
+
+
+  e.preventDefault();
+  e.stopPropagation();
+
+
+  //prepare bulle who can be selected
+  var idcol = parseInt(elm.closest('.col').id.charAt(3))
+
+  var txt = "#col4 .bulle:not(.newbulle)";
+  if (idcol <= 3) txt += ",#col3 .bulle:not(.newbulle)";
+  if (idcol <= 2) txt += ",#col2 .bulle:not(.newbulle)";
+  if (idcol <= 1) txt += ",#col1 .bulle:not(.newbulle)";
+
+  document.querySelectorAll(txt).forEach(el => {
+    el.classList.add('bulleover');
+  });
+}
+
+
+var at4a_arrowlist = []
+
+function at4a_createarrow(startEl, endEl) {
+
+  var frompos = "right"
+  if (startEl.classList.contains('top')) frompos = "top"
+  if (startEl.classList.contains('bottom')) frompos = "bottom"
+
+  var topos = "left"
+
+  if (startEl.closest('.col') == endEl.closest('.col')) // is in same column ?
+  {
+    if (startEl.getBoundingClientRect().top < endEl.getBoundingClientRect().top)
+      topos = "top"
+    else topos = "bottom"
+
+  }
+
+  var path = {
+    from: startEl.parentElement.id,
+    to: endEl.id,
+    frompos: frompos,
+    topos: topos,
+    fromposxy: "",
+    toposxy: "",
+    col: at4a_arrow_col(),
+    over: 0
+  }
+
+
+  at4a_arrowlist.push(path)
+
+  last_selected_arrowid = at4a_arrowlist.length - 1;
+
+  at4a_save_arrows()
+  at4a_showarrow()
+  at4a_refresh_path_at4b()
+}
+
+function at4a_showarrow() {
+  document.querySelectorAll('.arrowdot').forEach(e => e.remove('arrowdot'));
+
+  var at4a_canvas = document.getElementById('at4a_canvas');
+  if (!at4a_canvas) {
+    at4a_canvas = document.createElement('canvas');
+
+    at4a_canvas.id = 'at4a_canvas';
+    at4a_canvas.style.position = 'absolute';
+    at4a_canvas.style.top = 0;
+    at4a_canvas.style.left = 0;
+    at4a_canvas.style.width = '100vw';
+    at4a_canvas.style.height = '100vh';
+    at4a_canvas.style.pointerEvents = 'none';
+    at4a_canvas.style.zIndex = 90;
+
+    at4a.appendChild(at4a_canvas);
+    window.addEventListener('resize', at4a_resizeCanvas);
+    at4a_resizeCanvas();
+  }
+
+
+
+  const ctx = at4a_canvas.getContext('2d');
+  ctx.clearRect(0, 0, at4a_canvas.width, at4a_canvas.height);
+
+  var selected_line = 0;
+  var biggerline = 0
+
+
+  for (var i = 0; i < at4a_arrowlist.length; i++) {
+    biggerline = 0
+    var AnArrow = at4a_arrowlist[i]
+
+    if (selected_line) {
+      selected_line = 0;
+    } else if (at4a_selectELM === i) // DRAW LINE TWICE
+    {
+      selected_line = 1;
+    } else if (at4a_bigger_line.includes(AnArrow.from + "_" + AnArrow.to)) {
+      biggerline = 1
+    }
+
+
+
+
+    var elmStart = getpos(document.querySelector('#' + AnArrow.from), AnArrow.frompos, AnArrow.fromposxy, 0)
+    var elmStop = getpos(document.querySelector('#' + AnArrow.to), AnArrow.topos, AnArrow.toposxy, 0)
+
+
+    var startX = elmStart.x
+    var startY = elmStart.y
+    var endX = elmStop.x
+    var endY = elmStop.y
+
+
+    ctx.strokeStyle = AnArrow.col;
+    ctx.lineWidth = 3;
+    if (selected_line) {
+      ctx.strokeStyle = "#dd0000";
+      ctx.lineWidth = 6;
+    }
+    if (biggerline) {
+      ctx.lineWidth = 6;
+    }
+
+    ctx.beginPath();
+
+    // Tracé orthogonal (L)
+    // trouver le centre de la ligne vertical-align
+    var colinfo = document.querySelector('#' + AnArrow.from).closest('.col').getBoundingClientRect();
+    var midX = colinfo.left + colinfo.width + 10
+
+
+    //midX+=.5
+
+    // meme col
+    var endxpath = endX
+    var endypath = endY
+
+    if (AnArrow.topos == "left") endxpath -= 5;
+    if (AnArrow.topos == "right") endxpath += 5;
+    if (AnArrow.topos == "top") endypath -= 5;
+    if (AnArrow.topos == "bottom") endypath += 5;
+
+    if (document.querySelector('#' + AnArrow.from).closest('.col') == document.querySelector('#' + AnArrow.to).closest('.col')) // meme block
+    {
+      const midY = startY + (endY - startY) / 2;
+
+      var startH = 0
+      var endH = 0
+      if (AnArrow.frompos == "top" || AnArrow.frompos == "bottom") startH = 1
+      if (AnArrow.topos == "top" || AnArrow.topos == "bottom") endH = 1
+
+
+      ctx.beginPath();
+      ctx.moveTo(startX + .5, startY + .5);
+      if (startH != endH) {
+        if (AnArrow.frompos == "right")
+          ctx.lineTo(endxpath + .5, startY + .5);
+        else
+          ctx.lineTo(startX + .5, endypath + .5);
+      } else {
+        ctx.lineTo(startX + .5, midY);
+        ctx.lineTo(endxpath + .5, midY);
+      }
+      ctx.lineTo(endxpath + .5, endypath + .5);
+      ctx.stroke();
+    } else if (AnArrow.frompos == "top" || AnArrow.frompos == "bottom") {
+      ctx.beginPath();
+      ctx.moveTo(startX + .5, startY + .5);
+      ctx.lineTo(startX + .5, endypath + .5);
+      ctx.lineTo(endxpath + .5, endypath + .5);
+      ctx.stroke();
+    } else if (AnArrow.topos == "top" || AnArrow.topos == "bottom") {
+      ctx.beginPath();
+      ctx.moveTo(startX + .5, startY + .5);
+      ctx.lineTo(endxpath + .5, startY + .5);
+      ctx.lineTo(endxpath + .5, endypath + .5);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(startX + .5, startY + .5);
+      ctx.lineTo(midX + .5, startY + .5);
+      ctx.lineTo(midX + .5, endypath + .5);
+      ctx.lineTo(endxpath + .5, endypath + .5);
+      ctx.stroke();
+
+    }
+
+
+    // Pointe de flèche
+    const size = 8;
+    ctx.beginPath();
+
+    var reverse = 1;
+    if (AnArrow.topos == "left" || AnArrow.topos == "right") {
+      if (AnArrow.topos == "right") reverse = -1;
+      ctx.moveTo(endX, endY);
+      ctx.lineTo(endX - size * 2 * reverse, endY - size);
+      ctx.lineTo(endX - size * 2 * reverse, endY + size);
+    }
+    if (AnArrow.topos == "top" || AnArrow.topos == "bottom") {
+      if (AnArrow.topos == "bottom") reverse = -1;
+      ctx.moveTo(endX, endY);
+      ctx.lineTo(endX - size, endY - size * 2 * reverse);
+      ctx.lineTo(endX + size, endY - size * 2 * reverse);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = AnArrow.col;
+    ctx.fill();
+
+
+    //begin point
+    var elmStart = getpos(document.querySelector('#' + AnArrow.from), AnArrow.frompos, AnArrow.fromposxy, 1)
+
+    elmStart = mod_arrowdot(elmStart, AnArrow.frompos)
+
+    NEWdiv = document.createElement("div");
+    NEWdiv.className = "arrowdot";
+    NEWdiv.style.position = "absolute";
+    NEWdiv.style.left = elmStart.x + "px"
+    NEWdiv.style.top = elmStart.y + "px"
+    NEWdiv.dataset.arrowid = i
+    NEWdiv.dataset.arrowtype = "start"
+    NEWdiv.setAttribute("onmousedown", "click_arrowdot(this,event)");
+    document.querySelector('#' + AnArrow.from).appendChild(NEWdiv);
+
+    // end point
+    var elmStop = getpos(document.querySelector('#' + AnArrow.to), AnArrow.topos, AnArrow.toposxy, 1)
+    elmStop = mod_arrowdot(elmStop, AnArrow.topos)
+    NEWdiv = document.createElement("div");
+    NEWdiv.className = "arrowdot";
+    NEWdiv.style.position = "absolute";
+    NEWdiv.style.left = elmStop.x + "px"
+    NEWdiv.style.top = elmStop.y + "px"
+    NEWdiv.dataset.arrowid = i
+    NEWdiv.dataset.arrowtype = "end"
+    NEWdiv.setAttribute("onmousedown", "click_arrowdot(this,event)");
+    document.querySelector('#' + AnArrow.to).appendChild(NEWdiv);
+
+    if (selected_line)
+      i--; // to redraw line
+  }
+
+}
+
+function mod_arrowdot(elmStart, where) {
+  if (where == "top") {
+    elmStart.y -= 10;
+    elmStart.x -= 5
+  } else if (where == "right") {
+    elmStart.y -= 5
+  } else if (where == "bottom") {
+    elmStart.x -= 5
+  } else {
+    elmStart.x -= 10;
+    elmStart.y -= 5
+  }
+  return elmStart
+}
+
+function getpos(elem, where, mod, is_in_elem) {
+  var bulle = elem.getBoundingClientRect();
+
+  //by default, right
+
+  var x = bulle.left
+  var y = bulle.top
+
+  if (is_in_elem) {
+    x = y = 0;
+  }
+
+  if (where == "top") {
+    x += bulle.width / 2
+    x -= mod
+  } else if (where == "right") {
+    x += bulle.width
+    y += bulle.height / 2
+    y -= mod
+  } else if (where == "bottom") {
+    x += bulle.width / 2
+    y += bulle.height
+    x -= mod
+  } else // left
+  {
+    y += bulle.height / 2
+    y -= mod
+  }
+
+  return {
+    x: x,
+    y: y
+  }
+}
+
+
+var last_selected_arrowid = false;
+
+function click_arrowdot(dot, event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const container = dot.parentElement; // ou document.getElementById("container")
+  const rect = container.getBoundingClientRect();
+
+  // Pour centrer le dot sur le curseur (optionnel)
+  const dotW = dot.offsetWidth;
+  const dotH = dot.offsetHeight;
+
+  function snap10(v) {
+    return Math.round(v / 5) * 5;
+  }
+
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  function setOnBorder(clientX, clientY) {
+    // position du curseur relative au container
+    let x = clientX - rect.left;
+    let y = clientY - rect.top;
+
+    // clamp dans la div
+    x = clamp(x, 0, rect.width);
+    y = clamp(y, 0, rect.height);
+
+    // snap au pas de 10
+    x = snap10(x);
+    y = snap10(y);
+
+
+
+    // distances aux bords
+    const dTop = y;
+    const dBottom = rect.height - y;
+    const dLeft = x;
+    const dRight = rect.width - x;
+
+
+
+    const minD = Math.min(dTop, dBottom, dLeft, dRight);
+
+
+    x -= 10
+    y += 5
+
+
+    // IMPORTANT: comme le dot a une taille, on le positionne avec un offset
+    // pour qu'il reste visible sur le bord (centre sur la ligne du bord)
+    var arrowpos = ""
+    var MODposxy = ""
+    if (minD === dTop) {
+      arrowpos = "top"
+      MODposxy = rect.width / 2 - x - dotW
+      dot.style.top = (-dotH) + "px";
+      dot.style.left = (x - dotW) + "px";
+    } else if (minD === dBottom) {
+      arrowpos = "bottom"
+      MODposxy = rect.width / 2 - x - dotW
+      dot.style.top = (rect.height) + "px";
+      dot.style.left = (x - dotW) + "px";
+    } else if (minD === dLeft) {
+      arrowpos = "left"
+      MODposxy = rect.height / 2 - (y - dotH / 2)
+      dot.style.left = (-dotW) + "px";
+      dot.style.top = (y - dotH / 2) + "px";
+    } else { // right
+      arrowpos = "right"
+      MODposxy = rect.height / 2 - (y - dotH / 2)
+      dot.style.left = (rect.width) + "px";
+      dot.style.top = (y - dotH / 2) + "px";
+    }
+
+    //var path = {from:startEl.parentElement.id,to:endEl.id,frompos:frompos,topos:topos,fromposxy:"",toposxy:""}
+
+    var arrowid = parseInt(dot.dataset.arrowid)
+    var arrowtype = dot.dataset.arrowtype
+    if (arrowtype == "start") {
+      at4a_arrowlist[arrowid].frompos = arrowpos;
+      at4a_arrowlist[arrowid].fromposxy = MODposxy;
+    }
+    if (arrowtype == "end") {
+      at4a_arrowlist[arrowid].topos = arrowpos;
+      at4a_arrowlist[arrowid].toposxy = MODposxy;
+    }
+
+    at4a_col_2_picker(at4a_arrowlist[arrowid].col)
+    last_selected_arrowid = arrowid;
+
+    at4a_select(last_selected_arrowid)
+
+    //delete_arrow_icon.style.visibility="visible"
+
+
+    at4a_showarrow()
+  }
+
+  // 1) on place tout de suite au mousedown (optionnel, mais agréable)
+  setOnBorder(event.clientX, event.clientY);
+
+  // 2) drag: on écoute le move sur document (sinon ça coupe si on sort du dot)
+  function onMove(e) {
+    setOnBorder(e.clientX, e.clientY);
+  }
+
+  // 3) fin du drag
+  function onUp() {
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+    at4a_save_arrows()
+  }
+
+  document.addEventListener("mousemove", onMove);
+  document.addEventListener("mouseup", onUp);
+}
+
+
+
+function at4a_resizeCanvas() {
+  at4a_canvas.width = window.innerWidth;
+  at4a_canvas.height = window.innerHeight;
+  at4a_showarrow()
+}
+
+
+
+
+function installArrowCanvasFollowMouse(options = {}) {
+  const {
+    zIndex = 90,
+      lineWidth = 3,
+      headLength = 14,
+      strokeStyle = "rgba(255, 0, 0, 0.9)",
+      pickElement = (evt) => document.elementFromPoint(evt.clientX, evt.clientY),
+      isValidTarget = (el) => !!el && el !== document.documentElement && el !== document.body,
+  } = options;
+
+  // Canvas overlay
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  Object.assign(canvas.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100vw",
+    height: "100vh",
+    pointerEvents: "none",
+    zIndex: String(zIndex),
+  });
+
+  document.body.appendChild(canvas);
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+
+  let isDragging = false;
+  let startEl = null;
+  let startPt = null;
+
+  function centerOf(el) {
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left + r.width / 2,
+      y: r.top + r.height / 2
+    };
+  }
+
+  function clear() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function drawArrow(from, to) {
+    clear();
+
+    ctx.save();
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    // Ligne
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.stroke();
+
+    // Tête
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const hl = headLength;
+
+    ctx.beginPath();
+    ctx.moveTo(to.x, to.y);
+    ctx.lineTo(to.x - hl * Math.cos(angle - Math.PI / 6), to.y - hl * Math.sin(angle - Math.PI / 6));
+    ctx.moveTo(to.x, to.y);
+    ctx.lineTo(to.x - hl * Math.cos(angle + Math.PI / 6), to.y - hl * Math.sin(angle + Math.PI / 6));
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function onMouseDown(evt) {
+    const el = pickElement(evt);
+    if (!isValidTarget(el)) return;
+
+    isDragging = true;
+    startEl = el;
+    startPt = centerOf(el);
+
+    // Première peinture immédiate vers la position actuelle
+    drawArrow(startPt, {
+      x: evt.clientX,
+      y: evt.clientY
+    });
+  }
+
+  function onMouseMove(evt) {
+    if (!isDragging || !startPt) return;
+    drawArrow(startPt, {
+      x: evt.clientX,
+      y: evt.clientY
+    });
+  }
+
+  function onMouseUp(evt) {
+    if (!isDragging || !startPt) return;
+
+    var endEl = pickElement(evt);
+    if (isValidTarget(endEl)) {
+      // Fixe la flèche sur l'élément de destination
+      const endPt = centerOf(endEl);
+      drawArrow(startPt, endPt);
+    } else {
+      // Sinon, on efface ou on laisse la dernière flèche (ici on efface)
+      clear();
+    }
+
+
+    if (!endEl.classList.contains('bulleover') && endEl.closest('.bulleover')) {
+      endEl = endEl.closest('.bulleover');
+    }
+
+
+    if (endEl != startEl.parentElement && endEl.classList.contains('bulleover')) {
+      at4a_createarrow(startEl, endEl)
+    }
+
+    isDragging = false;
+    startEl = null;
+    startPt = null;
+
+    document.removeEventListener("mousedown", onMouseDown, true);
+    document.removeEventListener("mousemove", onMouseMove, true);
+    document.removeEventListener("mouseup", onMouseUp, true);
+    canvas.remove();
+    document.querySelectorAll('.bulleover').forEach(e => e.classList.remove('bulleover'));
+
+
+
+  }
+
+  function startFromElement(el) {
+    isDragging = true;
+    startEl = el;
+    startPt = centerOf(el);
+  }
+
+  function updateToPoint(pt) {
+    if (!isDragging || !startPt) return;
+    drawArrow(startPt, pt);
+  }
+
+  function endOnElement(el) {
+    if (!isDragging || !startPt) return;
+    drawArrow(startPt, centerOf(el));
+    isDragging = false;
+    startEl = null;
+    startPt = null;
+  }
+
+  function endAtPoint(pt) {
+    if (!isDragging || !startPt) return;
+    drawArrow(startPt, pt);
+    isDragging = false;
+    startEl = null;
+    startPt = null;
+  }
+
+  window.addEventListener("resize", () => {
+    resize();
+    // Si drag en cours, on redessine vers la dernière position connue si besoin
+  });
+
+  // Écoute globale (recommandé)
+  document.addEventListener("mousedown", onMouseDown, true);
+  document.addEventListener("mousemove", onMouseMove, true);
+  document.addEventListener("mouseup", onMouseUp, true);
+
+  return {
+    canvas,
+    clear,
+    // API manuelle si tu veux piloter depuis tes handlers
+    startFromElement,
+    updateToPoint,
+    endOnElement,
+    endAtPoint,
+
+  };
+}
+
+
+
+
+function at4a_col_2_picker(col) {
+  var el = document.querySelector(`.pic_col div[style*="background-color:${col.toUpperCase()}"]`);
+  pick_col(el)
+}
+
+
+function at4a_arrow_col() {
+  //return document.querySelector('.pic_col .colselect').style.backgroundColor 
+  // rgb (x,y,z) -> #0123456
+  return '#' + getComputedStyle(document.querySelector('.pic_col .colselect'))
+    .backgroundColor.match(/\d+/g).slice(0, 3)
+    .map(x => (+x).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+function pick_col(elm) {
+  document.querySelectorAll('.colselect').forEach(e => e.classList.remove('colselect'));
+  elm.classList.add('colselect');
+}
+
+function click_pick_col(elm) {
+  pick_col(elm)
+  if (last_selected_arrowid !== false) {
+    last_selected_arrowid = parseInt(last_selected_arrowid)
+    at4a_arrowlist[last_selected_arrowid].col = at4a_arrow_col()
+    at4a_save_arrows()
+    at4a_showarrow()
+  }
+}
+
+function release_arrow() {
+  last_selected_arrowid = false;
+  //delete_arrow_icon.style.visibility="hidden"
+}
+
+
+
+
+function redraw_newbulle() {
+  var maxY = 290;
+  document.querySelectorAll('.bulle:not(.newbulle)').forEach(el => {
+    const y = el.offsetTop + el.offsetHeight
+    if (y > maxY) maxY = y;
+  });
+
+  document.querySelectorAll('.newbulle').forEach(el => {
+    el.style.top = maxY + 40 + "px"
+  });
+
+  document.querySelectorAll('.scenarcont').forEach(el => {
+    el.style.height = maxY + 40 + 60 + "px"
+  });
+
+
+  document.querySelectorAll('.bulledot').forEach(el => el.remove());
+
+  // draw DOT for new arrow
+  document.querySelectorAll('.bulle:not(.newbulle)').forEach(el => {
+
+    var NEWdiv = document.createElement("div");
+    NEWdiv.className = "bulledot top";
+    NEWdiv.style.position = "absolute";
+    NEWdiv.style.left = el.offsetWidth / 2 - 6 + "px"
+    NEWdiv.style.top = "0px"
+    NEWdiv.setAttribute("onmousedown", "click_bulledot(this,event)");
+    el.appendChild(NEWdiv);
+
+    NEWdiv = document.createElement("div");
+    NEWdiv.className = "bulledot left";
+    NEWdiv.style.position = "absolute";
+    NEWdiv.style.left = el.offsetWidth - 12 + "px"
+    NEWdiv.style.top = el.offsetHeight / 2 - 6 + "px"
+    NEWdiv.setAttribute("onmousedown", "click_bulledot(this,event)");
+    el.appendChild(NEWdiv);
+
+    NEWdiv = document.createElement("div");
+    NEWdiv.className = "bulledot bottom";
+    NEWdiv.style.position = "absolute";
+    NEWdiv.style.left = el.offsetWidth / 2 - 6 + "px"
+    NEWdiv.style.top = el.offsetHeight - 12 + "px"
+    NEWdiv.setAttribute("onmousedown", "click_bulledot(this,event)");
+    el.appendChild(NEWdiv);
+
+  });
+}
+
+
+
+
+function dragdropresize(elem, e) {
+  e.preventDefault();
+
+  const parent = elem.offsetParent;
+  if (!parent) return;
+
+  const cs = window.getComputedStyle(elem);
+  if (cs.position === "static") elem.style.position = "absolute";
+
+  const parentRect = parent.getBoundingClientRect();
+  const elemRect = elem.getBoundingClientRect();
+
+  const startLeft = elemRect.left - parentRect.left;
+
+  const startMouseX = e.clientX;
+
+  elem.style.left = `${startLeft}px`;
+
+  function onMouseMove(ev) {
+    var dx = ev.clientX - startMouseX;
+
+
+    dx = Math.round(dx / 20) * 20;
+
+    var parentCOL = elem.closest('.col')
+
+    var finalCOLsize = startLeft + dx
+
+
+    if (finalCOLsize < 220) return
+    if (finalCOLsize >= 800) return
+
+    elem.style.left = finalCOLsize + 'px';
+    parentCOL.style.width = finalCOLsize + 12 + 'px';
+
+    at4a_showarrow()
+  }
+
+  function onMouseUp() {
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+
+  }
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp);
+}
+
+function dragdropbulle(elem, e) {
+
+  at4b_clean_overpath()
+  if (!document.querySelector('.at4a_scenar_mod')) return; // not Modify mod
+
+
+  if (!elem.classList.contains('newbulle'))
+    bulle_edit(elem);
+
+  e.preventDefault();
+  elem.classList.add('bulledrag')
+
+  release_arrow();
+  at4a_showarrow()
+
+  const parent = elem.offsetParent;
+  if (!parent) return;
+
+  const cs = window.getComputedStyle(elem);
+  if (cs.position === "static") elem.style.position = "absolute";
+
+  const parentRect = parent.getBoundingClientRect();
+  const elemRect = elem.getBoundingClientRect();
+
+  const startLeft = elemRect.left - parentRect.left;
+  const startTop = elemRect.top - parentRect.top;
+
+  const startMouseX = e.clientX;
+  const startMouseY = e.clientY;
+
+  elem.style.left = `${startLeft}px`;
+
+  const GRID = 20;
+
+  function onMouseMove(ev) {
+    let dx = ev.clientX - startMouseX;
+    let dy = ev.clientY - startMouseY;
+
+    dx = Math.round(dx / GRID) * GRID;
+    dy = Math.round(dy / GRID) * GRID;
+
+    var maxleft = elem.closest('.col').offsetWidth - elem.offsetWidth
+    var maxtop = elem.closest('.col').offsetHeight + 500
+
+
+
+    if (startLeft + dx > 0 && (startLeft + dx) < maxleft) elem.style.left = `${startLeft + dx}px`;
+
+    if (startTop + dy > 40 && (startTop + dy) < maxtop) elem.style.Top = elem.style.top = `${startTop + dy}px`;
+    at4a_showarrow()
+  }
+
+  function onMouseUp() {
+    elem.classList.remove('bulledrag')
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+
+
+    if (elem.classList.contains('newbulle')) // are we dropping a new bulle ?
+    {
+
+      //create a new one based on actual place
+      //var actualplace = elem.getBoundingClientRect();
+
+      const containerRect = elem.parentElement;
+
+      // position souris → repère du container
+      //const x = e.clientX - containerRect.left;
+      //const y = e.clientY - containerRect.top;
+
+      var i = 1;
+      while (document.querySelector('#bulle' + i)) {
+        i++
+      }
+
+
+      var classname = "bulle"
+      if (containerRect.closest("#col4")) classname = "bulle at4a_target";
+
+      var NEWdiv = at4a_newbulle('bulle' + i, containerRect, elem.style.left, elem.style.top, at4a_find_text(parent), 3, classname)
+
+      //		//back to place
+      elem.style.left = 20 + "px";
+
+      bulle_edit(NEWdiv);
+    }
+
+    at4a_save_arrows()
+    redraw_newbulle()
+  }
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp);
+}
+
+
+
+
+function at4a_newbulle(id, parentelement, x, y, txt, proba, classname) {
+
+  var NEWdiv = document.createElement("div");
+  NEWdiv.className = classname;
+  NEWdiv.style.position = "absolute";
+  NEWdiv.style.left = x
+  NEWdiv.style.top = y
+  NEWdiv.id = id
+
+  NEWdiv.innerHTML = "<span style='width: 100%;' class='bulletxt'>" + txt + "</span>"
+  NEWdiv.setAttribute("onmousedown", "dragdropbulle(this,event)");
+  parentelement.appendChild(NEWdiv);
+
+  var NEWdivedit = document.createElement("div");
+  NEWdivedit.className = "probaicon";
+  NEWdivedit.dataset.value = proba;
+  NEWdivedit.innerHTML = at4a_iconproba(proba)
+  NEWdivedit.title = at4a_proba_succes.options[proba].innerText;
+  NEWdivedit.setAttribute("onmousedown", "bulle_edit(this)");
+  NEWdiv.appendChild(NEWdivedit);
+  return NEWdiv;
+}
+
+
+
+var at4a_selectELM = false;
+var at4a_bigger_line = ""
+
+function at4a_select(elm) {
+  at4a_selectELM = elm
+
+  document.querySelectorAll('.bulleselected').forEach(e => e.classList.remove('bulleselected'));
+
+
+  if (typeof elm === "object" && elm.classList.contains("bulle"))
+    at4a_bull_sel.classList.add("bulleselected")
+}
+
+var at4a_bull_sel = false;
+
+function bulle_edit(elm) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!document.querySelector('.at4a_scenar_mod')) return; // not Modify mod
+
+
+
+  at4a_bull_sel = elm.closest('.bulle')
+
+  at4a_select(at4a_bull_sel)
+
+  at4a_bulleinfo.style.visibility = "visible"
+
+  at4a_bulleinfotexte.value = at4a_bull_sel.querySelector('.bulletxt').innerText
+  at4a_proba_succes.value = at4a_bull_sel.querySelector('.probaicon').dataset.value
+
+  at4a_but_click_target.style.visibility = at4a_bull_sel.closest('#col4') ? "visible" : "hidden";
+
+  if (at4a_bull_sel.classList.contains('at4a_target')) {
+    at4a_but_click_target.classList.add('at4a_target_clicked')
+  } else at4a_but_click_target.classList.remove('at4a_target_clicked')
+}
+
+
+
+function at4a_iconproba(v) {
+  if (v == 0) return "🟢"
+  if (v == 1) return "🟡"
+  if (v == 2) return "⚠️"
+  if (v == 3) return "<span style='filter: hue-rotate(-45deg) saturate(5) brightness(0.9);'>⚠️</span>"
+  if (v == 4) return "💥"
+}
+
+function at4a_proba_succes_change(v) {
+
+  var icon = at4a_bull_sel.querySelector('.probaicon')
+
+  icon.innerHTML = at4a_iconproba(v.value)
+  icon.title = v.selectedOptions[0].innerText
+  icon.dataset.value = v.value
+  at4a_refresh_path_at4b()
+}
+
+function at4a_texte_change(elm) {
+
+  at4a_bull_sel.querySelector('.bulletxt').innerText = elm.value
+}
+
+function at4a_delete() {
+
+  if (typeof at4a_selectELM === "number") //bulle
+  {
+    delete_arrow()
+    return
+  }
+
+  //arrow
+  var idbulle = at4a_bull_sel.id
+
+  at4a_arrowlist = at4a_arrowlist.filter(item => item.from !== idbulle && item.to !== idbulle);
+
+  at4a_bull_sel.remove()
+  at4a_bull_sel = false;
+  at4a_bulleinfo.style.visibility = "hidden"
+  at4a_but_click_target.style.visibility = "hidden"
+
+  at4a_save_arrows()
+  at4a_showarrow()
+  at4a_refresh_path_at4b()
+}
+
+
+function at4a_save_arrows() {
+  var txt = JSON.stringify(at4a_arrowlist)
+
+  at4a_scenar.dataset.arrow = txt
+}
+
+function at4a_find_text(elm) {
+  var colid = elm.closest('.col').id
+
+  if (colid == "col1") return "Reconnaissance externe sources ouvertes"
+  if (colid == "col2") return "Corruption d’un personnel"
+  if (colid == "col3") return "Latéralisation vers réseau LAN IT"
+  if (colid == "col4") return "Vol et exploitation de données"
+}
+
+function delete_arrow() {
+  at4a_arrowlist.splice(last_selected_arrowid, 1);
+  release_arrow()
+
+  at4a_save_arrows()
+  at4a_showarrow()
+  at4a_refresh_path_at4b()
+}
+
+function at4a_click_target() {
+  var divC = at4a_bull_sel.classList
+  if (divC.contains('at4a_target')) {
+    divC.remove('at4a_target')
+    at4a_but_click_target.classList.remove('at4a_target_clicked')
+  } else {
+    divC.add('at4a_target')
+    at4a_but_click_target.classList.add('at4a_target_clicked')
+  }
+
+  at4a_refresh_path_at4b()
+}
+
+function at4a_exploit_list() {
+  show_divcenter()
+  at4a_exploitlist.style.display = "block"
+
+
+
+  var colid = at4a_bull_sel.closest('.col').id.charAt(3)
+
+  loadmitre(colid)
+}
+
+
+function filterByTactics(data, allowedTactics) {
+  return data.filter(row => allowedTactics.includes(row[0]));
+}
+
+
+function loadmitre(mitreID) {
+  var MITRE_LIST2EBIOS = `
+TA0043	T1585	Establish Accounts	Création de comptes factices pour préparer une attaque ciblée
+TA0043	T1586	Compromise Accounts	Compromission de comptes tiers pour collecter des informations
+TA0043	T1587	Develop Capabilities	Développement d’outils adaptés au contexte technique cible
+TA0043	T1588	Obtain Capabilities	Acquisition d’outils ou services nécessaires à l’attaque
+TA0043	T1589	Gather Victim Identity Information	Collecte d’informations sur les personnes clés de l’organisation
+TA0043	T1590	Gather Victim Network Information	Collecte d’informations sur l’architecture et l’exposition réseau
+TA0043	T1591	Gather Victim Organization Information	Collecte d’informations sur la structure et les partenaires
+TA0043	T1592	Gather Victim Host Information	Identification des systèmes, serveurs et technologies utilisés
+TA0043	T1593	Search Open Websites/Domains	Recherche d’informations via sites et sources ouvertes
+TA0043	T1594	Search Victim-Owned Websites	Analyse des sites de la cible pour détecter des informations utiles
+TA0043	T1595	Active Scanning	Scan actif des services exposés et vulnérabilités potentielles
+TA0043	T1596	Search Open Technical Databases	Recherche d’informations techniques en bases publiques
+TA0043	T1597	Search Closed Sources	Recherche d’informations via sources fermées ou clandestines
+TA0043	T1598	Phishing for Information	Obtention d’informations par hameçonnage ou ingénierie sociale
+TA0043	T1599	Network Boundary Bridging	Préparation d’un rebond entre environnements interconnectés
+
+TA0042	T1583	Acquire Infrastructure	Acquisition ou location d’infrastructures techniques d’attaque
+TA0042	T1584	Compromise Infrastructure	Compromission d’infrastructures tierces pour masquer l’origine
+TA0042	T1585	Establish Accounts	Création de comptes numériques pour préparer une intrusion
+TA0042	T1586	Compromise Accounts	Compromission de comptes existants pour usurpation d’identité
+TA0042	T1587	Develop Capabilities	Développement ou adaptation d’outils malveillants ciblés
+TA0042	T1588	Obtain Capabilities	Achat d’outils offensifs ou d’accès initiaux
+TA0042	T1608	Stage Capabilities	Pré-positionnement d’infrastructures ou charges malveillantes
+
+TA0001	T1566	Phishing	Obtention d’un accès initial par hameçonnage
+TA0001	T1190	Exploit Public-Facing Application	Exploitation d’une vulnérabilité sur service exposé Internet
+TA0001	T1133	External Remote Services	Accès initial via un service distant légitime
+TA0001	T1078	Valid Accounts	Utilisation de comptes valides pour accéder aux systèmes
+TA0001	T1189	Drive-by Compromise	Compromission via la consultation d’un site web piégé
+TA0001	T1200	Hardware Additions	Introduction d’un équipement physique malveillant
+TA0001	T1195	Supply Chain Compromise	Compromission via un fournisseur ou prestataire lié
+TA0001	T1199	Trusted Relationship	Exploitation d’une relation de confiance interconnectée
+
+TA0002	T1059	Command and Scripting Interpreter	Exécution de commandes via interpréteur natif du système
+TA0002	T1204	User Execution	Exécution de code malveillant après action utilisateur
+TA0002	T1047	Windows Management Instrumentation	Exécution de commandes via mécanismes WMI
+TA0002	T1053	Scheduled Task/Job	Exécution différée via tâche planifiée
+TA0002	T1129	Shared Modules	Chargement d’une bibliothèque malveillante en mémoire
+TA0002	T1106	Native API	Exécution d’actions via appels API natives
+TA0002	T1569	System Services	Exécution par création ou modification d’un service
+TA0002	T1559	Inter-Process Communication	Exécution via mécanismes de communication inter-processus
+TA0002	T1609	Container Administration Command	Exécution de commandes dans un environnement conteneurisé
+
+TA0003	T1547	Boot or Logon Autostart Execution	Exécution automatique au démarrage ou à la connexion
+TA0003	T1136	Create Account	Création d’un compte local, domaine ou cloud persistant
+TA0003	T1098	Account Manipulation	Modification de droits ou paramètres de comptes existants
+TA0003	T1505	Server Software Component	Implantation d’un composant malveillant sur serveur
+TA0003	T1574	Hijack Execution Flow	Détournement du flux d’exécution d’une application
+TA0003	T1543	Create or Modify System Process	Création ou modification d’un processus système
+TA0003	T1546	Event Triggered Execution	Persistance déclenchée par un événement système
+TA0003	T1176	Browser Extensions	Installation d’une extension navigateur malveillante
+TA0003	T1525	Implant Internal Image	Déploiement d’une image système compromise
+TA0003	T1556	Modify Authentication Process	Altération du mécanisme d’authentification
+
+TA0004	T1068	Exploitation for Privilege Escalation	Exploitation locale pour obtenir des privilèges supérieurs
+TA0004	T1078	Valid Accounts	Usage de comptes disposant de privilèges élevés
+TA0004	T1484	Domain or Tenant Policy Modification	Modification des politiques de sécurité du domaine
+TA0004	T1134	Access Token Manipulation	Manipulation de jetons d’accès pour élever les droits
+TA0004	T1548	Abuse Elevation Control Mechanism	Contournement des mécanismes de contrôle d’élévation
+
+TA0005	T1027	Obfuscated Files or Information	Obfuscation ou chiffrement du code pour éviter la détection
+TA0005	T1562	Impair Defenses	Désactivation ou altération des outils de sécurité
+TA0005	T1070	Indicator Removal	Suppression des journaux et traces d’activité
+TA0005	T1036	Masquerading	Usurpation de l’apparence de fichiers ou processus légitimes
+TA0005	T1218	Signed Binary Proxy Execution	Exécution via binaire légitime signé
+TA0005	T1497	Virtualization/Sandbox Evasion	Contournement des environnements d’analyse ou sandbox
+TA0005	T1222	File and Directory Permissions Modification	Modification des permissions pour dissimuler l’accès
+
+TA0006	T1003	OS Credential Dumping	Extraction d’identifiants stockés en mémoire système
+TA0006	T1555	Credentials from Password Stores	Extraction de mots de passe depuis navigateurs ou coffres
+TA0006	T1552	Unsecured Credentials	Exploitation d’identifiants stockés sans protection
+TA0006	T1110	Brute Force	Tentatives répétées pour deviner des identifiants
+TA0006	T1187	Forced Authentication	Forçage d’un système à révéler des informations d’authentification
+TA0006	T1539	Steal Web Session Cookie	Vol de cookie de session pour usurpation web
+
+TA0007	T1082	System Information Discovery	Identification des caractéristiques du système compromis
+TA0007	T1018	Remote System Discovery	Identification des systèmes accessibles sur le réseau
+TA0007	T1057	Process Discovery	Recensement des processus actifs sur le système
+TA0007	T1049	System Network Connections Discovery	Analyse des connexions réseau actives
+TA0007	T1069	Permission Groups Discovery	Identification des groupes et privilèges associés
+TA0007	T1087	Account Discovery	Recensement des comptes locaux ou domaine
+TA0007	T1518	Software Discovery	Identification des logiciels installés sur le système
+TA0007	T1482	Domain Trust Discovery	Identification des relations de confiance inter-domaines
+
+TA0008	T1021	Remote Services	Déplacement latéral via services distants légitimes
+TA0008	T1550	Use of Stolen Credentials	Rebond interne via identifiants compromis
+TA0008	T1210	Exploitation of Remote Services	Exploitation d’une vulnérabilité sur système interne
+TA0008	T1570	Lateral Tool Transfer	Transfert d’outils malveillants vers d’autres systèmes
+TA0008	T1563	Remote Service Session Hijacking	Détournement d’une session distante existante
+
+TA0009	T1560	Archive Collected Data	Compression ou archivage des données collectées
+TA0009	T1114	Email Collection	Collecte de courriels depuis un système compromis
+TA0009	T1005	Data from Local System	Collecte de données locales sur le système
+TA0009	T1039	Data from Network Shared Drive	Collecte de données depuis un partage réseau
+TA0009	T1113	Screen Capture	Capture d’écran pour collecter des informations
+TA0009	T1123	Audio Capture	Capture de flux audio du système compromis
+TA0009	T1119	Automated Collection	Collecte automatisée de données selon critères
+
+TA0011	T1071	Application Layer Protocol	Commande et contrôle via protocole applicatif légitime
+TA0011	T1095	Non-Application Layer Protocol	Commande et contrôle via protocole non standard
+TA0011	T1105	Ingress Tool Transfer	Téléchargement d’outils depuis infrastructure distante
+TA0011	T1573	Encrypted Channel	Utilisation d’un canal chiffré pour le C2
+TA0011	T1001	Data Obfuscation	Dissimulation des communications de commande
+TA0011	T1219	Remote Access Software	Utilisation d’un outil d’accès distant légitime
+
+TA0010	T1041	Exfiltration Over C2 Channel	Extraction de données via le canal C2 établi
+TA0010	T1567	Exfiltration Over Web Service	Exfiltration via service web ou cloud légitime
+TA0010	T1020	Automated Exfiltration	Extraction automatisée de données sensibles
+TA0010	T1011	Exfiltration Over Other Network Medium	Exfiltration via autre protocole réseau interne
+TA0010	T1052	Exfiltration Over Physical Medium	Extraction de données via support physique
+
+TA0040	T1486	Data Encrypted for Impact	Chiffrement massif de données à des fins d’extorsion
+TA0040	T1490	Inhibit System Recovery	Neutralisation des mécanismes de sauvegarde
+TA0040	T1485	Data Destruction	Destruction ou suppression irréversible de données
+TA0040	T1499	Endpoint Denial of Service	Interruption volontaire d’un système ou serveur
+TA0040	T1498	Network Denial of Service	Déni de service visant l’infrastructure réseau
+TA0040	T1565	Data Manipulation	Altération ou corruption volontaire de données
+TA0040	T1531	Account Access Removal	Suppression ou blocage de comptes légitimes`
+
+
+  var MITRE_ARRAY = MITRE_LIST2EBIOS
+    .trim() // enlève les lignes vides début/fin
+    .split("\n") // découpe en lignes
+    .map(line => line.split("\t")); // découpe chaque ligne en colonnes
+
+  // MITRE -> EBIOS
+  // https://club-ebios.org/site/wp-content/uploads/productions/ClubEBIOS-GuideMethodologique-Atelier4-V1.1.pdf page 33
+
+  var get_mitr = "TA0043 TA0042" // Reconnaitre
+  if (mitreID == 2) get_mitr = "TA0001 TA0002 TA0003 TA0004 TA0005" // Rentrer
+  if (mitreID == 3) get_mitr = "TA0006 TA0007 TA0008 TA0009" // Trouver
+  if (mitreID == 4) get_mitr = "TA0011 TA0010 TA0040" // Exploiter
+
+  var filtered = filterByTactics(MITRE_ARRAY, get_mitr.split(' '));
+
+
+  var HTML = "";
+
+  HTML += "<tr style='font-size:smaller'><td>MitreID</td><td style='text-align:center'> Description Ebios</td></tr>";
+
+  filtered.forEach(function(element, index) {
+    HTML += "<tr><td><a href='https://attack.mitre.org/techniques/" + element[1] + "/' title='" + element[2] + "' target='_blank'>" + element[1] + "</a></td><td onclick='selectmitreebios(this.innerText)' class='mitre2ebiosclick'>" + element[3] + "</td></tr>";
+  });
+
+
+  tabmitre2ebios.innerHTML = HTML
+
+
+  document.querySelectorAll(".mitreblockselected").forEach(e => e.classList.remove('mitreblockselected'));
+  document.querySelector(".mitreblock" + mitreID).classList.add('mitreblockselected');
+}
+
+function selectmitreebios(txt) {
+  at4a_bulleinfotexte.value = txt
+  at4a_texte_change(at4a_bulleinfotexte)
+  hide_divcenter()
+}
+
+
+
+function allPaths(links, options = {}) {
+  const {
+    start = null,
+      end = null,
+      simple = true,
+      maxDepth = Infinity,
+  } = options;
+
+  // adjacency: from -> [edge, edge, ...]
+  const adj = new Map();
+  const inDeg = new Map();
+  const outDeg = new Map();
+  const nodesSet = new Set();
+
+  for (const e of links) {
+    nodesSet.add(e.from);
+    nodesSet.add(e.to);
+
+    if (!adj.has(e.from)) adj.set(e.from, []);
+    adj.get(e.from).push(e);
+
+    inDeg.set(e.to, (inDeg.get(e.to) || 0) + 1);
+    outDeg.set(e.from, (outDeg.get(e.from) || 0) + 1);
+
+    // init deg for missing keys
+    if (!inDeg.has(e.from)) inDeg.set(e.from, inDeg.get(e.from) || 0);
+    if (!outDeg.has(e.to)) outDeg.set(e.to, outDeg.get(e.to) || 0);
+  }
+
+  const nodes = [...nodesSet];
+
+  // Si start/end non fournis: on prend sources -> puits
+  const sources = start ? [start] : nodes.filter(n => (inDeg.get(n) || 0) === 0);
+  const sinks = end ? new Set([end]) : new Set(nodes.filter(n => (outDeg.get(n) || 0) === 0));
+
+  const results = [];
+
+  function dfs(current, pathNodes, pathEdges, visited) {
+    if (pathNodes.length > maxDepth) return;
+
+    // Si on est sur un puits (ou end)
+    if (sinks.has(current)) {
+      results.push({
+        nodes: [...pathNodes],
+        edges: [...pathEdges]
+      });
+      // note: si tu veux aussi continuer au-delà d'un sink, enlève ce return
+      return;
+    }
+
+    const nextEdges = adj.get(current) || [];
+    for (const edge of nextEdges) {
+      const nxt = edge.to;
+
+      if (simple && visited.has(nxt)) continue; // évite cycles
+
+      pathNodes.push(nxt);
+      pathEdges.push(edge);
+      if (simple) visited.add(nxt);
+
+      dfs(nxt, pathNodes, pathEdges, visited);
+
+      if (simple) visited.delete(nxt);
+      pathNodes.pop();
+      pathEdges.pop();
+    }
+  }
+
+  for (const s of sources) {
+    const visited = new Set([s]);
+    dfs(s, [s], [], visited);
+  }
+
+  return results;
+}
+
+
+
+
+function at4a_refresh_path_at4b() {
+
+  var lst_target = document.querySelectorAll(".at4a_target")
+  at4b_div.innerHTML = "";
+
+  var HTML = "<table id='at4b_TABLE' style='border-collapse:collapse;margin: 20px;'>"
+  HTML += "<tr><td>Vraisemblance</td><td></td><td>SR/OV lié</td></tr>"
+
+
+  for (var i = 0; i < lst_target.length; i++) {
+    HTML += at4b_pathbulleID(lst_target[i].id)
+  }
+
+  HTML += "</table>"
+  at4b_div.innerHTML = HTML
+
+  at4b_clean_overpath()
+}
+
+function at4b_clean_overpath() {
+  at4a_arrowlist.forEach(e => e.over = 0);
+  document.querySelectorAll('.bulle').forEach(e => e.classList.remove('pathover'));
+}
+
+function overpath(elm) {
+
+  at4b_clean_overpath()
+
+  var pathinfo = JSON.parse(elm.dataset.pathfound)
+
+
+
+
+  pathinfo.nodes.forEach(e => document.querySelector('#' + e).classList.add('pathover'));
+
+
+
+  at4a_bigger_line = elm.dataset.dataidsave
+  at4a_showarrow()
+}
+
+
+function at4b_pathbulleID(bulleID) {
+
+  var pathinfo = allPaths(at4a_arrowlist, {
+    end: bulleID
+  })
+
+
+
+  for (var i = 0; i < pathinfo.length; i++) {
+    var Pnodes = pathinfo[i].nodes;
+
+    var vmax = -1;
+    for (var n = 0; n < Pnodes.length - 1; n++) {
+      var VelemPath = document.querySelector('#' + Pnodes[n]).querySelector('.probaicon').dataset.value
+      if (VelemPath > vmax) vmaxSTD = VelemPath;
+    }
+    pathinfo[i].vraisemblanceSTD = vmaxSTD
+  }
+
+
+  const pathinfoMAX = [...pathinfo].sort((a, b) => b.vraisemblanceSTD - a.vraisemblanceSTD);
+
+
+  var HTML = ""
+
+  for (var i = 0; i < pathinfoMAX.length; i++) {
+    var path = pathinfoMAX[i]
+    var V = path.vraisemblanceSTD
+    var Vinfo = at4b_vraisemble_to_txtcol(V)
+
+    //check cache
+    var TXTsrovlink = "Aucun"
+    var idsrov = 0;
+    var dataIDsave = path.nodes.join('_')
+    var getcache = cacheGet(dataIDsave)
+    if (getcache != null) {
+      TXTsrovlink = "OK"
+      idsrov = getcache;
+    }
+
+
+    HTML += "<tr data-idsrov=" + idsrov + " data-dataIDsave=" + dataIDsave + " data-v=" + V + " style=background-color:#" + Vinfo.c + " onmouseover='overpath(this)' data-pathfound='" + JSON.stringify(path) + "'>"
+    HTML += "<td style='text-align: center;'><span style='font-weight:bold;'>V" + V + "</span><br/>" + Vinfo.txt + "</td>"
+    HTML += "<td>"
+    HTML += Vinfo.d
+
+    HTML += "</td>"
+    HTML += "<td style='text-align: center;' onclick='at4b_ch_SROV(this)'>" + TXTsrovlink + "</td>"
+    HTML += "</tr>"
+  }
+
+  return HTML
+
+}
+
+function at4b_ch_SROV(elm) {
+
+
+  PPL_clickTD = elm
+
+  show_divcenter()
+  at4b_ch_SROVelm.style.display = "block"
+
+  var ididsrovSEL = elm.closest('tr').dataset.idsrov
+
+  var HTML = "<tr style='display:none'><td></td><td></td><td></td></tr>";
+
+  var at4b_srovlistOK = []
+  for (var i = 1; i < at2c_srovlist.rows.length; i++) {
+    var tr = at2c_srovlist.rows[i];
+    if (tr.style.display != "none")
+      at4b_srovlistOK.push(tr)
+  }
+
+  for (var i = 0; i < at4b_srovlistOK.length; i++) {
+    var tr = at4b_srovlistOK[i];
+
+
+    var idsrov = tr.dataset.idsrov
+    var v = ""
+    if (ididsrovSEL == idsrov) v = "checked"
+
+    var trTD = tr.querySelectorAll('td')
+
+    HTML += "<tr data-idsrov='" + idsrov + "' onclick='clicktdinputradio(this)'><td><input type='radio' name='idsrov' value='' " + v + "/></td>"
+    HTML += "<td>" + trTD[0].innerText + "</td><td>" + trTD[1].innerText + "</td><td >" + trTD[2].innerText + "</td>"
+    HTML += "</tr>"
+  }
+
+  if (!at4b_srovlistOK.length) {
+    HTML = "<tr style='background-color:#E2D3E0'><td>Aucun SR/OV retenus l'atelier 2.C</td></tr>";
+  }
+  at4b_ch_ERelmTAble.innerHTML = HTML
+}
+
+function at4b_ch_EROK() {
+  if (!at4b_ch_SROVelm.querySelector('input:checked')) return; // nothing selected
+
+  var tr = at4b_ch_SROVelm.querySelector('input:checked').closest('tr')
+  var idsrov = tr.dataset.idsrov
+
+
+
+
+  // save data into external tab (for automatic search)
+  var dataIDsave = JSON.parse(PPL_clickTD.closest('tr').dataset.pathfound).nodes.join('_')
+  cacheSave(dataIDsave, idsrov)
+
+  hide_divgrey()
+
+  PPL_clickTD.innerText = "OK"
+  PPL_clickTD.closest('tr').dataset.idsrov = idsrov
+}
+
+const CACHE = {};
+
+/**
+ * Sauvegarde dans le cache
+ */
+function cacheSave(id, data) {
+  CACHE[id] = data;
+}
+
+/**
+ * Récupère une valeur du cache
+ */
+function cacheGet(id) {
+  return (id in CACHE) ? CACHE[id] : null;
+}
+
+/**
+ * Supprime une entrée
+ */
+function cacheDelete(id) {
+  delete CACHE[id];
+}
+
+/**
+ * Vérifie si une clé existe
+ */
+function cacheHas(id) {
+  return id in CACHE;
+}
+/**
+ * Vide tout le cache
+ */
+function cacheClear() {
+  for (let key in CACHE) {
+    delete CACHE[key];
+  }
+}
+
+
+
+function at4b_vraisemble_to_txtcol(x) {
+
+  var c = "C5A900"
+  var t = "Quasi certain"
+  var d = "La source de risque va certainement atteindre son objectif visé selon l’un des modes opératoires envisagés.<br/>La vraisemblance du scénario est très élevée."
+  if (x == 3) {
+    c = "DCCB66";
+    t = "Très vraisemblable";
+    d = "La source de risque va probablement atteindre son objectif visé selon l’un des modes opératoires envisagés.<br/>La vraisemblance du scénario est élevée."
+  }
+  if (x == 2) {
+    c = "EEE5B2";
+    t = "Vraisemblable";
+    d = "La source de risque est susceptible d’atteindre son objectif visé selon l’un des modes opératoires envisagés.<br/>La vraisemblance du scénario est significative."
+  }
+  if (x <= 1) {
+    c = "F9F6E5";
+    t = "Peu vraisemblable";
+    d = "La source de risque a peu de chance d’atteindre son objectif visé selon l’un des modes opératoires envisagés.<br/>La vraisemblance du scénario est faible."
+  }
+
+  return {
+    c: c,
+    txt: t,
+    d: d
+  }
+}
+
+
+
+//at1a_clickTD
+var PPL_clickTD = false;
+
+function at1a_RACIclick(event) {
+  var td = event.target.closest('td')
+
+  if (!td) return
+
+  if (td.classList.contains('noclick')) return;
+  if (td.parentElement.classList.contains('noclick')) return;
+
+
+  PPL_clickTD = td
+
+
+  show_divgrey()
+  show_divcenter()
+
+
+  at1a_addppl.style.display = "block"
+  at1a_drappltable()
+
+
+}
+
+
+function at1a_drappltable() {
+
+
+  if (!at1a_raci.dataset.ppl) {
+    var ppl = [{
+      name: "M. Example",
+      titre: "RSSI",
+      uid: "aaaaaaaa1"
+    }, {
+      name: "Jane Doe",
+      titre: "Consultante",
+      uid: "aaaaaaaa2"
+    }]
+    at1a_raci.dataset.ppl = JSON.stringify(ppl)
+  }
+
+
+
+  var ppl = JSON.parse(at1a_raci.dataset.ppl)
+
+  at1a_listppl.style.disabled = "block"
+
+
+  while (at1a_listppltbl.rows[0]) at1a_listppltbl.rows[0].remove()
+
+  log(ppl)
+  ppl.sort(function(a, b) {
+    return a.name.localeCompare(b.name)
+  })
+
+  for (var i = 0; i < ppl.length; i++) {
+
+    var p = ppl[i]
+
+    var row = at1a_listppltbl.insertRow();
+    row.setAttribute('onclick', "chooseppl('" + p.uid + "')");
+
+    var cell0 = row.insertCell();
+    var cell1 = row.insertCell();
+    var cell2 = row.insertCell();
+
+
+    cell0.innerHTML = "&#128100;"
+    cell1.innerHTML = p.name + "<br/><span style='color:#888'>" + p.titre + "</span>"
+    cell2.innerHTML = "×"
+    cell2.setAttribute('onclick', "at1a_removeppl(this,event)");
+    cell2.dataset.uid = p.uid
+
+  }
+}
+
+function at1a_removeppl(elm, e) {
+  e.stopPropagation();
+  var uid = elm.dataset.uid
+
+  var ppl = JSON.parse(at1a_raci.dataset.ppl)
+
+  const newArray = ppl.filter(obj => obj.uid !== uid);
+  at1a_raci.dataset.ppl = JSON.stringify(newArray)
+
+  at1a_drappltable()
+}
+
+
+function chooseppl(uid) {
+  add_ppl_inTD(uid)
+  hide_divgrey()
+}
+
+function add_ppl_inTD(uid) {
+  var ppl = JSON.parse(at1a_raci.dataset.ppl)
+  const p = ppl.filter(obj => obj.uid == uid)[0];
+
+  var HTMLtd = p.name + "<br/><span style='color:#888'>" + p.titre + "</span>"
+
+  var HTML = "<div class='divppl' data-uid='" + uid + "'><div style='width:30px'>👤</div><div>" + HTMLtd + "</div><div class='todelete' onclick='at1a_deleteppl(event)'>×</div></div>"
+
+  PPL_clickTD.innerHTML += HTML
+}
+
+
+function at1a_deleteppl(e) {
+  e.target.closest('.divppl').remove();
+  event.stopPropagation();
+}
+
+function at1a_newppl() {
+
+  if (at1a_raci.dataset.ppl)
+    var ppl = JSON.parse(at1a_raci.dataset.ppl)
+  else
+    ppl = []
+
+  var newname = at1a_name.value.trim()
+
+  if (!newname) return;
+
+
+  var uid = Math.random().toString(36).slice(2) //self.crypto.randomUUID();
+
+
+
+  ppl.push({
+    name: newname,
+    titre: at1a_fonc.value,
+    uid: uid
+  })
+
+  at1a_name.value = ""
+  at1a_fonc.value = ""
+
+
+  at1a_raci.dataset.ppl = JSON.stringify(ppl)
+
+  at1a_drappltable()
+}
+
+
+
+
+function at5a_createTAB() {
+  at5a_tablerisk.innerHTML = "";
+  at5a_risktable.querySelectorAll('span').forEach(e => e.remove());
+  if (!at4b_TABLE) return; // table doesnt exist yet
+
+  var riskinfo = []
+  if (at5a_risktable.dataset.riskinfo)
+    riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+
+
+  for (var i = 1; i < at4b_TABLE.rows.length; i++) // add new risk from at4b if not exist
+  {
+    var tr = at4b_TABLE.rows[i];
+
+    var idsrov = parseInt(tr.dataset.idsrov)
+    var dataidsave = tr.dataset.dataidsave
+
+    if (idsrov && !(riskinfo.some(i => i.dataidsave === dataidsave))) {
+      const ids = riskinfo.map(i => i.riskid);
+      let newid = 1;
+      while (ids.includes(newid)) {
+        newid++;
+      }
+
+      var iduniq = Math.random().toString(36).slice(2)
+
+      // TXT
+      var pathfound = JSON.parse(tr.dataset.pathfound)
+      var bulleStartid = pathfound.nodes[0]
+      var bulleEndid = pathfound.nodes[pathfound.nodes.length - 1]
+      var bulleStartTXT = document.querySelector("#" + bulleStartid).querySelector('.bulletxt').innerText
+      var bulleEndTXT = document.querySelector("#" + bulleEndid).querySelector('.bulletxt').innerText
+      var txt = bulleStartTXT + "->" + bulleEndTXT
+
+      riskinfo.push({
+        iduniq: iduniq,
+        riskid: newid,
+        dataidsave: dataidsave,
+        txt: txt,
+        grares: 0,
+        vrares: 0
+      })
+    }
+  }
+
+
+
+  /// DELETED RISK IF DOESNT EXIST ANYMORE in at4b
+  var risk_to_delete = []
+  riskinfo.forEach(risk => {
+    if (!at4b_TABLE.querySelector("[data-dataidsave='" + risk.dataidsave + "']"))
+      risk_to_delete.push(risk.dataidsave)
+  });
+  riskinfo = riskinfo.filter(risk => !risk_to_delete.includes(risk.dataidsave));
+
+
+
+  //WRITE
+  at5a_risktable.dataset.riskinfo = JSON.stringify(riskinfo)
+
+  //SHOW
+  riskinfo.forEach(risk => {
+
+    var tr = at4b_TABLE.querySelector("[data-dataidsave='" + risk.dataidsave + "']")
+    var idsrov = tr.dataset.idsrov
+    var ider = at2c_srovlist.querySelector("[data-idsrov='" + idsrov + "']").dataset.ider
+    var GRA = at1c_table.querySelector("[data-ider='" + ider + "']").querySelector('.gravitespan').innerText
+    var VRA = parseInt(tr.dataset.v)
+
+    at5a_writerisk(risk.iduniq, risk.riskid, risk.txt, VRA, GRA)
+  });
+
+
+  at5d_RR()
+}
+
+
+
+
+function editRISKtext(elm) {
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+  var txt = elm.innerText;
+  var iduniq = elm.dataset.iduniq;
+
+  const item = riskinfo.find(i => i.iduniq === iduniq);
+  if (item) {
+    item.txt = txt;
+    at5a_risktable.dataset.riskinfo = JSON.stringify(riskinfo)
+  }
+
+}
+
+
+function at5a_writerisk(iduniq, riskid, txt, vra, gra) {
+
+  var row = at5a_tablerisk.insertRow();
+  //row.className="tr_deleteicon"
+
+  //var cell0 = row.insertCell();
+  var cell1 = row.insertCell();
+  var cell2 = row.insertCell();
+  var cell3 = row.insertCell();
+
+  //cell0.innerHTML="<span onclick=\"at5a_deleterisk("+firstFreeId+");this.closest('tr').remove();\">×</span>"
+  cell1.innerHTML = "<span class='riskid' data-iduniq=" + iduniq + " style='color:var(--color);font-weight:bold;'>R" + riskid + "</span> :"
+  cell2.innerText = txt;
+  cell2.contentEditable = true;
+  cell2.dataset.iduniq = iduniq;
+  cell2.addEventListener('input', function() {
+    editRISKtext(this)
+  });
+
+  cell3.innerHTML = "🔍"
+  cell3.setAttribute('onclick', "at5a_clickriskinfo(this)");
+  cell3.style.cursor = "pointer";
+
+  document.querySelector('#at5a_' + vra + gra).innerHTML += "<span class='at5_riskspan' data-iduniq='" + iduniq + "'>R" + riskid + "</span>"
+}
+
+function at5a_clickriskinfo(elm) {
+  var tr = elm.closest('tr');
+
+  if (tr.classList.contains('open')) {
+    tr.classList.remove('open')
+    tr.nextSibling.remove()
+    return
+  }
+  tr.classList.add('open')
+
+  var spaninfo = tr.querySelector('span')
+  var riskTXT = spaninfo.innerText
+  var iduniq = spaninfo.dataset.iduniq
+
+
+  var tdinfo = at5a_tablerisk.insertRow();
+  var cell1 = tdinfo.insertCell();
+  var cell2 = tdinfo.insertCell();
+  var cell3 = tdinfo.insertCell();
+
+  cell1.innerHTML = "<select onmousedown='at5a_openrisk(this)' onchange='at5a_chriskid(this)' data-iduniq=" + iduniq + "><option>" + riskTXT + "</option></select>"
+  cell2.innerHTML = "Vraisemblance : 4.B<br/>Gravité : 1.C"
+
+
+
+
+  tr.insertAdjacentElement('afterend', tdinfo);
+}
+
+
+function at5a_openrisk(elm) {
+  setTimeout(() => {
+    at5a_openrisk10ms(elm)
+  }, 10);
+}
+
+function at5a_openrisk10ms(elm) {
+  var iduniq = elm.dataset.iduniq;
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+
+
+
+  const item = riskinfo.find(i => i.iduniq === iduniq);
+  if (item) {
+    var riskid = item.riskid;
+    elm.dataset.actualriskid = riskid
+  }
+
+  //const riskIds = riskinfo.map(item => item.riskid);
+  //log(riskIds)
+
+  var HTML = ""
+  for (var i = 1; i < 40; i++) {
+    var isdisabled = ""
+    var isselected = ""
+
+
+
+    if (riskid == i)
+      isselected = "selected='true'"
+
+    if (isselected == "" && riskinfo.find(ri => ri.riskid === i))
+      isdisabled = "disabled='disabled'"
+
+
+    HTML += "<option value=" + i + " " + isdisabled + " " + isselected + ">R" + i + "</option>"
+  }
+
+  elm.innerHTML = HTML
+}
+
+function at5a_chriskid(elm) {
+  if (elm.value == elm.dataset.actualriskid) return; // no change
+
+  var iduniq = elm.dataset.iduniq;
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+
+  const item = riskinfo.find(i => i.iduniq === iduniq);
+  if (!item) error("risk not found")
+
+  var newriskid = parseInt(elm.value)
+  item.riskid = newriskid;
+
+  at5a_risktable.querySelector("[data-iduniq='" + iduniq + "']").innerText = "R" + newriskid;
+  at5a_tablerisk.querySelector("[data-iduniq='" + iduniq + "']").innerText = "R" + newriskid;
+  at5c_table.querySelectorAll("[data-iduniq='" + iduniq + "']").forEach(e => {
+    e.parentElement.innerHTML = at5c_tagriskHTML(iduniq, newriskid)
+  });
+
+
+
+  at5a_risktable.dataset.riskinfo = JSON.stringify(riskinfo)
+
+  at5d_RR()
+}
+
+function at5c_add() {
+
+  var row = at5c_table.insertRow();
+  row.className = "tr_deleteicon"
+  var cell0 = row.insertCell();
+  var cell1 = row.insertCell();
+  var cell2 = row.insertCell();
+  var cell3 = row.insertCell();
+  var cell4 = row.insertCell();
+  var cell5 = row.insertCell();
+
+  cell0.innerHTML = "<span onclick=\"this.closest('tr').remove();\">×</span>"
+  cell1.innerText = "Renforcement de la sécurité";
+  cell1.contentEditable = true
+  cell2.setAttribute('onclick', "at5c_chooserisk(event)");
+  cell3.setAttribute('onclick', "at1a_RACIclick(event)");
+  cell4.innerHTML = at5c_getComplexity();
+  cell4.className = "aligncenter"
+  cell5.innerHTML = at5c_getHTMLtime()
+
+  return row;
+}
+
+function at5c_getComplexity() {
+  var HTML = "<select class='at5c_select_time' onchange='at5c_selecttime_change(this)'>"
+  HTML += "<option value=''></option>"
+  HTML += "<option value='+'>+</option>"
+  HTML += "<option value='++'>++</option>"
+  HTML += "<option value='+++'>+++</option>"
+  return HTML;
+}
+
+function at5c_getHTMLtime() {
+  var HTML = "<select class='at5c_select_time' onchange='at5c_selecttime_change(this)'>"
+  HTML += "<option value=''></option>"
+
+  var Tmois = JSON.parse(at5c_table.dataset.timeoption)
+
+  Tmois.forEach(el => {
+    var txt = el.label
+    var mois = el.mois
+    HTML += "<option value='" + mois + "'>" + txt + "</option>"
+  })
+
+
+  HTML += "<option value='other'>...</option></select>"
+  return HTML;
+}
+
+
+
+function at5c_selecttime_change(elm) {
+
+  if (elm !== "showdiv" && elm.value != "other") return;
+
+  show_divcenter()
+  at5c_chtime.style.display = "block"
+
+
+  var Tmois = JSON.parse(at5c_table.dataset.timeoption)
+
+  at5c_chtime_table.innerHTML = ""
+
+  var i = 0;
+  Tmois.forEach(el => {
+
+    var row = at5c_chtime_table.insertRow();
+    var cell0 = row.insertCell();
+    var cell1 = row.insertCell();
+
+    cell0.innerHTML = "x"
+    cell1.innerHTML = el.label
+
+    cell0.setAttribute('onclick', "at5c_chtime_remove(" + i + ")");
+    i++;
+  })
+
+
+}
+
+
+function at5d_RR() {
+
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+
+  at5d_riskres.innerHTML = ""
+
+  //SHOW
+  riskinfo.forEach(risk => {
+
+    var row = at5d_riskres.insertRow();
+    //row.className="tr_deleteicon"
+
+    //var cell0 = row.insertCell();
+    var cell1 = row.insertCell();
+    var cell2 = row.insertCell();
+    var cell3 = row.insertCell();
+
+    var iduniq = risk.iduniq
+
+    var tr = at4b_TABLE.querySelector("[data-dataidsave='" + risk.dataidsave + "']")
+    var idsrov = tr.dataset.idsrov
+    var ider = at2c_srovlist.querySelector("[data-idsrov='" + idsrov + "']").dataset.ider
+    var GRA = at1c_table.querySelector("[data-ider='" + ider + "']").querySelector('.gravitespan').innerText
+    var VRA = parseInt(tr.dataset.v)
+
+    var GRAres = GRA
+    var VRAres = VRA
+    if (risk.grares) GRAres = risk.grares
+    if (risk.vrares) VRAres = risk.vrares
+
+    cell1.innerHTML = "<span class='riskid' data-iduniq=" + iduniq + " style='color:var(--color);font-weight:bold;'>R" + risk.riskid + "</span> :"
+    cell2.innerHTML = "Gravité:" + GRA + "-><select class='typegra' data-default=" + GRA + " onmousedown='at5d_opensel(this)' onchange='at5d_chsel(this)' data-iduniq=" + iduniq + "><option>" + GRAres + "</option></select>" + " Vraisemblance:" + VRA + "-><select class='typevra' data-default=" + VRA + " onmousedown='at5d_opensel(this)' onchange='at5d_chsel(this)' data-iduniq=" + iduniq + "><option>" + VRAres + "</option></select>";
+    cell2.dataset.iduniq = iduniq;
+
+  });
+
+
+
+  at5d_table()
+}
+
+
+
+
+function at5d_opensel(elm) {
+  setTimeout(() => {
+    at5d_opensel10ms(elm)
+  }, 10);
+}
+
+function at5d_opensel10ms(elm) {
+  var iduniq = elm.dataset.iduniq;
+
+  var value = parseInt(elm.value)
+  var def_value = parseInt(elm.dataset.default)
+
+  var HTML = ""
+  for (var i = 1; i <= 4; i++) {
+    var isdisabled = ""
+    var isselected = ""
+
+    if (value == i)
+      isselected = "selected='true'"
+
+    if (def_value < i)
+      isdisabled = "disabled='disabled'"
+
+    HTML += "<option value=" + i + " " + isdisabled + " " + isselected + ">" + i + "</option>"
+  }
+
+  elm.innerHTML = HTML
+}
+
+function at5d_chsel(elm) {
+
+  var type = elm.className
+
+
+
+  var iduniq = elm.dataset.iduniq;
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+
+  const item = riskinfo.find(i => i.iduniq === iduniq);
+  if (!item) error("risk not found")
+
+  var newvalue = parseInt(elm.value)
+
+  if (type == "typegra") item.grares = newvalue;
+  if (type == "typevra") item.vrares = newvalue;
+
+
+
+
+  at5a_risktable.dataset.riskinfo = JSON.stringify(riskinfo)
+
+
+  at5d_table()
+}
+
+
+
+
+function at5d_table() {
+  at5d_risktable.innerHTML = at5a_risktable.innerHTML
+
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+  // add only residuel
+
+  riskinfo.forEach(risk => {
+
+    var riskid = risk.riskid
+    var iduniq = risk.iduniq
+
+    var tr = at4b_TABLE.querySelector("[data-dataidsave='" + risk.dataidsave + "']")
+    var idsrov = tr.dataset.idsrov
+    var ider = at2c_srovlist.querySelector("[data-idsrov='" + idsrov + "']").dataset.ider
+    var GRA = at1c_table.querySelector("[data-ider='" + ider + "']").querySelector('.gravitespan').innerText
+    var VRA = parseInt(tr.dataset.v)
+
+    var GRAres = GRA
+    var VRAres = VRA
+    if (risk.grares) GRAres = risk.grares
+    if (risk.vrares) VRAres = risk.vrares
+
+    document.querySelector('#at5d_risktable').querySelector('#at5a_' + VRAres + GRAres).innerHTML += "<span class='at5_riskres res_" + iduniq + "' data-iduniq='" + iduniq + "'>R" + riskid + "</span>"
+  });
+
+
+  // ADD arrow
+
+
+  // at5_riskspan
+  // at5_riskres
+
+  at5d_risktable.querySelectorAll('.at5_riskspan').forEach(el => {
+
+    var elm = el
+    var iduniq = el.dataset.iduniq
+
+    var elmres = at5d_risktable.querySelector('.res_' + iduniq)
+
+
+    createArrowBetween(elm, elmres)
+  })
+
+}
+
+
+
+function createArrowBetween(el1, el2) {
+  const container = document.getElementById("at5d_risktable");
+
+  const r1 = el1.getBoundingClientRect();
+  const r2 = el2.getBoundingClientRect();
+  const rc = container.getBoundingClientRect();
+
+  // centres RELATIFS au container
+  let x1 = r1.left - rc.left + r1.width / 2;
+  let y1 = r1.top - rc.top + r1.height / 2;
+
+  let x2 = r2.left - rc.left + r2.width / 2;
+  let y2 = r2.top - rc.top + r2.height / 2;
+
+  // vecteur
+  let dx = x2 - x1;
+  let dy = y2 - y1;
+  let dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist === 0) return;
+
+  // normalisation
+  let ux = dx / dist;
+  let uy = dy / dist;
+
+  // appliquer le retrait de 20px
+  x1 += ux * 15;
+  y1 += uy * 15;
+
+  x2 -= ux * 20;
+  y2 -= uy * 20;
+
+  dx = x2 - x1;
+  dy = y2 - y1;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+  // création ligne
+  const arrow = document.createElement("div");
+  arrow.style.position = "absolute";
+  arrow.style.left = x1 + "px";
+  arrow.style.top = y1 - 2 + "px";
+  arrow.style.width = length + "px";
+  arrow.style.height = "2px";
+  arrow.style.background = "white";
+  arrow.style.transformOrigin = "left center";
+  arrow.style.transform = `rotate(${angle}deg)`;
+
+  // pointe
+  const head = document.createElement("div");
+  head.style.position = "absolute";
+  head.style.right = "-6px";
+  head.style.top = "-4px";
+  head.style.borderLeft = "8px solid white";
+  head.style.borderTop = "5px solid transparent";
+  head.style.borderBottom = "5px solid transparent";
+
+  arrow.appendChild(head);
+  container.appendChild(arrow);
+}
+
+
+
+
+function at5c_chooserisk(event) {
+  var td = event.target.closest('td')
+  if (!td) return
+
+
+  divchoice_close()
+
+  PPL_clickTD = td
+  at5c_drawchooserisk(td)
+}
+
+function at5c_drawchooserisk(td) {
+
+  var HTML = ""
+
+  if (!at5a_tablerisk.querySelector('.riskid')) {
+    HTML = "Aucun risque en 5.A";
+  } else {
+
+    const datasetIds = Array.from(td.querySelectorAll('span')).map(span => span.dataset.iduniq);
+
+    at5a_tablerisk.querySelectorAll('.riskid').forEach(el => {
+
+      var iduniq = el.dataset.iduniq
+      if (!datasetIds.includes(iduniq)) {
+        HTML += "<div onclick='at5c_clickaddrisk(\"" + iduniq + "\")'>" + el.innerText + "</div>"
+      }
+    })
+
+  }
+
+
+  divchoice_open(PPL_clickTD, HTML)
+}
+
+
+
+
+function divchoice_open(elm, HTML) {
+
+  const tdRect = elm.getBoundingClientRect();
+
+  divover_risk.style.display = "block"
+
+
+  divover_risk.style.left = tdRect.x + "px"
+  divover_risk.style.top = window.scrollY + tdRect.y + tdRect.height - 2 + "px"
+  divover_risk.style.width = tdRect.width - 2 + "px"
+
+  divover_risk.innerHTML = HTML
+
+  setTimeout(function() {
+    document.addEventListener("click", divchoice_autoclose);
+  }, 0);
+}
+
+function divchoice_autoclose(event) {
+  if (event.target.closest('#divover_risk') || event.target.id == 'divover_risk') return;
+  divchoice_close()
+}
+
+
+function divchoice_close() {
+  divover_risk.style.display = "none"
+  document.removeEventListener("click", divchoice_autoclose);
+}
+
+function at5c_clickaddrisk(id) {
+  divchoice_close()
+  at5c_addrisk(id)
+  at5c_drawchooserisk(PPL_clickTD)
+
+  at5d_table()
+}
+
+
+function at5c_addrisk(iduniq) {
+  if (!iduniq) return;
+  const tag = document.createElement("div");
+  tag.className = "tag";
+
+
+  var riskinfo = JSON.parse(at5a_risktable.dataset.riskinfo);
+
+  const item = riskinfo.find(i => i.iduniq === iduniq);
+
+  tag.innerHTML = at5c_tagriskHTML(iduniq, item.riskid)
+
+
+  PPL_clickTD.appendChild(tag);
+}
+
+function at5c_tagriskHTML(iduniq, riskid) {
+  return `
+	<span data-iduniq='${iduniq}'>R${riskid}</span>
+	<button type="button" onclick='this.parentElement.remove();'>×</button>`
+}
+
+function at5c_chtime_add() {
+
+  var timeint = at5c_newtime_int.value
+  var timetype = at5c_newtime_jsma.value
+  var timemonth = 0
+
+  if (timetype == "j") timemonth = timeint / 30
+  if (timetype == "s") timemonth = timeint / 4
+  if (timetype == "m") timemonth = parseInt(timeint)
+  if (timetype == "a") timemonth = timeint * 12
+
+
+
+
+  var Tmois = JSON.parse(at5c_table.dataset.timeoption)
+  var labelselect = at5c_newtime_jsma.options[at5c_newtime_jsma.selectedIndex].text
+
+  if (timeint > 1 && (timetype == "j" || timetype == "s" || timetype == "a")) labelselect += "s"
+
+  Tmois.push({
+    "mois": timemonth,
+    "label": timeint + " " + labelselect
+  })
+
+
+  Tmois.sort((a, b) => Number(a.mois) - Number(b.mois));
+
+  at5c_table.dataset.timeoption = JSON.stringify(Tmois);
+
+
+
+
+  at5c_selecttime_change("showdiv")
+}
+
+function at5c_chtime_remove(index) {
+  var Tmois = JSON.parse(at5c_table.dataset.timeoption)
+
+  Tmois.splice(index, 1);
+
+  at5c_table.dataset.timeoption = JSON.stringify(Tmois);
+  at5c_selecttime_change("showdiv")
+}
+
+
+function at1d_new() {
+
+  var HTML = "<div class='at1d_divsocle'><div style='display:inline-block;width:800px;'><span onclick='at1d_deletesocle(this)' style='margin-left: -15px;'>×</span><span style='text-decoration:underline;margin:8px;display: inline-block;'>" + at1d_socle() + "</span>" + at1d_appliq() + "</div>"
+
+  HTML += "<br/><textarea id='' style='width: 100%;height:100px;' placeholder='Ecarts et justification'></textarea><br/><br/></div>"
+
+  at1d_soclediv.insertAdjacentHTML("beforeend", HTML);
+}
+
+
+
+/*
+function at1d_appliq_ch(elm)
+{
+var v = elm.value
+var c = "#111" // -1
+if(v==0) c="#F87171"
+if(v==1) c="#D1D5DB"
+if(v==2) c="#3B82F6"
+if(v==3) c="#FDE047"
+if(v==4) c="rgb(170, 255, 170)"
+
+elm.parentElement.style.backgroundColor=c
+}
+*/
+function at1d_socle() {
+  var HTML = "<select class='at1c_select_socle at1c_select_socle1' onchange='at1d_socle_ch(this)'>"
+
+  var Tmois = JSON.parse(at1d.dataset.socles)
+
+  Tmois.forEach(el => {
+    HTML += "<option value='" + el + "'>" + el + "</option>"
+  })
+
+
+  HTML += "<option value='other'>...</option></select>"
+  return HTML;
+}
+
+function at1d_appliq() {
+  var HTML = "<div style='float: right;'><select class='at1c_select_socle at1c_select_socle2' style='border:0;background:transparent;'>"
+
+  HTML += "<option value='1'>◻️ A faire</option>"
+  HTML += "<option value='2'>🟦 En cours</option>"
+  HTML += "<option value='0'>🟥 Non conforme</option>"
+  HTML += "<option value='3'>🟨 Partiellement conforme</option>"
+  HTML += "<option value='4'>🟩 Conforme</option>"
+  HTML += "<option value='-1'>⬛ Non applicable</option>"
+
+  HTML += "</select></div>"
+  return HTML;
+}
+
+function at1d_socle_ch(elm) {
+
+  if (elm !== "showdiv" && elm.value != "other") return;
+
+  show_divcenter()
+  at1d_chsocle.style.display = "block"
+
+  at1d_socle_addinput.value = ""
+  at1d_socle_addinput.focus();
+
+  var obj = JSON.parse(at1d.dataset.socles)
+
+  at1d_socle_list.innerHTML = ""
+
+  var i = 0;
+  obj.forEach(el => {
+
+    var row = at1d_socle_list.insertRow();
+    var cell0 = row.insertCell();
+    var cell1 = row.insertCell();
+
+    cell0.innerHTML = "×"
+    cell1.innerHTML = el
+
+    cell0.setAttribute('onclick', "at1d_socle_remove(" + i + ")");
+    i++;
+  })
+
+
+
+  return false;
+}
+
+function at1d_socle_remove(index) {
+  var obj = JSON.parse(at1d.dataset.socles)
+
+  var TEXTtoremove = obj[index];
+  obj.splice(index, 1);
+
+
+  document.querySelectorAll('.at1c_select_socle1').forEach(select => {
+    [...select.options].forEach(option => {
+      if (option.text.trim() === TEXTtoremove) {
+        option.remove();
+      }
+    });
+  });
+
+
+  at1d.dataset.socles = JSON.stringify(obj);
+  at1d_socle_ch("showdiv")
+}
+
+function at1d_deletesocle(elm) {
+  if (confirm('Supprimer le socle ?')) {
+    elm.closest('.at1d_divsocle').remove();
+  }
+}
+
+
+function at1d_socle_add() {
+  var txt = at1d_socle_addinput.value
+
+  var obj = JSON.parse(at1d.dataset.socles)
+  obj.push(txt)
+  at1d.dataset.socles = JSON.stringify(obj);
+
+
+
+  document.querySelectorAll('.at1c_select_socle1').forEach(select => {
+    const option = document.createElement('option');
+    option.text = txt;
+    const options = select.options;
+    select.insertBefore(option, options[options.length - 1]);
+  });
+
+
+  at1d_socle_ch("showdiv")
+}
+
+
+
+// https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js
+var LZString = function() {
+  var r = String.fromCharCode,
+    o = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    n = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",
+    e = {};
+
+  function t(r, o) {
+    if (!e[r]) {
+      e[r] = {};
+      for (var n = 0; n < r.length; n++) e[r][r.charAt(n)] = n
+    }
+    return e[r][o]
+  }
+  var i = {
+    compressToBase64: function(r) {
+      if (null == r) return "";
+      var n = i._compress(r, 6, function(r) {
+        return o.charAt(r)
+      });
+      switch (n.length % 4) {
+        default:
+        case 0:
+          return n;
+        case 1:
+          return n + "===";
+        case 2:
+          return n + "==";
+        case 3:
+          return n + "="
+      }
+    },
+    decompressFromBase64: function(r) {
+      return null == r ? "" : "" == r ? null : i._decompress(r.length, 32, function(n) {
+        return t(o, r.charAt(n))
+      })
+    },
+    compressToUTF16: function(o) {
+      return null == o ? "" : i._compress(o, 15, function(o) {
+        return r(o + 32)
+      }) + " "
+    },
+    decompressFromUTF16: function(r) {
+      return null == r ? "" : "" == r ? null : i._decompress(r.length, 16384, function(o) {
+        return r.charCodeAt(o) - 32
+      })
+    },
+    compressToUint8Array: function(r) {
+      for (var o = i.compress(r), n = new Uint8Array(2 * o.length), e = 0, t = o.length; e < t; e++) {
+        var s = o.charCodeAt(e);
+        n[2 * e] = s >>> 8, n[2 * e + 1] = s % 256
+      }
+      return n
+    },
+    decompressFromUint8Array: function(o) {
+      if (null == o) return i.decompress(o);
+      for (var n = new Array(o.length / 2), e = 0, t = n.length; e < t; e++) n[e] = 256 * o[2 * e] + o[2 * e + 1];
+      var s = [];
+      return n.forEach(function(o) {
+        s.push(r(o))
+      }), i.decompress(s.join(""))
+    },
+    compressToEncodedURIComponent: function(r) {
+      return null == r ? "" : i._compress(r, 6, function(r) {
+        return n.charAt(r)
+      })
+    },
+    decompressFromEncodedURIComponent: function(r) {
+      return null == r ? "" : "" == r ? null : (r = r.replace(/ /g, "+"), i._decompress(r.length, 32, function(o) {
+        return t(n, r.charAt(o))
+      }))
+    },
+    compress: function(o) {
+      return i._compress(o, 16, function(o) {
+        return r(o)
+      })
+    },
+    _compress: function(r, o, n) {
+      if (null == r) return "";
+      var e, t, i, s = {},
+        u = {},
+        a = "",
+        p = "",
+        c = "",
+        l = 2,
+        f = 3,
+        h = 2,
+        d = [],
+        m = 0,
+        v = 0;
+      for (i = 0; i < r.length; i += 1)
+        if (a = r.charAt(i), Object.prototype.hasOwnProperty.call(s, a) || (s[a] = f++, u[a] = !0), p = c + a, Object.prototype.hasOwnProperty.call(s, p)) c = p;
+        else {
+          if (Object.prototype.hasOwnProperty.call(u, c)) {
+            if (c.charCodeAt(0) < 256) {
+              for (e = 0; e < h; e++) m <<= 1, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++;
+              for (t = c.charCodeAt(0), e = 0; e < 8; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1
+            } else {
+              for (t = 1, e = 0; e < h; e++) m = m << 1 | t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t = 0;
+              for (t = c.charCodeAt(0), e = 0; e < 16; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1
+            }
+            0 == --l && (l = Math.pow(2, h), h++), delete u[c]
+          } else
+            for (t = s[c], e = 0; e < h; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1;
+          0 == --l && (l = Math.pow(2, h), h++), s[p] = f++, c = String(a)
+        } if ("" !== c) {
+        if (Object.prototype.hasOwnProperty.call(u, c)) {
+          if (c.charCodeAt(0) < 256) {
+            for (e = 0; e < h; e++) m <<= 1, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++;
+            for (t = c.charCodeAt(0), e = 0; e < 8; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1
+          } else {
+            for (t = 1, e = 0; e < h; e++) m = m << 1 | t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t = 0;
+            for (t = c.charCodeAt(0), e = 0; e < 16; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1
+          }
+          0 == --l && (l = Math.pow(2, h), h++), delete u[c]
+        } else
+          for (t = s[c], e = 0; e < h; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1;
+        0 == --l && (l = Math.pow(2, h), h++)
+      }
+      for (t = 2, e = 0; e < h; e++) m = m << 1 | 1 & t, v == o - 1 ? (v = 0, d.push(n(m)), m = 0) : v++, t >>= 1;
+      for (;;) {
+        if (m <<= 1, v == o - 1) {
+          d.push(n(m));
+          break
+        }
+        v++
+      }
+      return d.join("")
+    },
+    decompress: function(r) {
+      return null == r ? "" : "" == r ? null : i._decompress(r.length, 32768, function(o) {
+        return r.charCodeAt(o)
+      })
+    },
+    _decompress: function(o, n, e) {
+      var t, i, s, u, a, p, c, l = [],
+        f = 4,
+        h = 4,
+        d = 3,
+        m = "",
+        v = [],
+        g = {
+          val: e(0),
+          position: n,
+          index: 1
+        };
+      for (t = 0; t < 3; t += 1) l[t] = t;
+      for (s = 0, a = Math.pow(2, 2), p = 1; p != a;) u = g.val & g.position, g.position >>= 1, 0 == g.position && (g.position = n, g.val = e(g.index++)), s |= (u > 0 ? 1 : 0) * p, p <<= 1;
+      switch (s) {
+        case 0:
+          for (s = 0, a = Math.pow(2, 8), p = 1; p != a;) u = g.val & g.position, g.position >>= 1, 0 == g.position && (g.position = n, g.val = e(g.index++)), s |= (u > 0 ? 1 : 0) * p, p <<= 1;
+          c = r(s);
+          break;
+        case 1:
+          for (s = 0, a = Math.pow(2, 16), p = 1; p != a;) u = g.val & g.position, g.position >>= 1, 0 == g.position && (g.position = n, g.val = e(g.index++)), s |= (u > 0 ? 1 : 0) * p, p <<= 1;
+          c = r(s);
+          break;
+        case 2:
+          return ""
+      }
+      for (l[3] = c, i = c, v.push(c);;) {
+        if (g.index > o) return "";
+        for (s = 0, a = Math.pow(2, d), p = 1; p != a;) u = g.val & g.position, g.position >>= 1, 0 == g.position && (g.position = n, g.val = e(g.index++)), s |= (u > 0 ? 1 : 0) * p, p <<= 1;
+        switch (c = s) {
+          case 0:
+            for (s = 0, a = Math.pow(2, 8), p = 1; p != a;) u = g.val & g.position, g.position >>= 1, 0 == g.position && (g.position = n, g.val = e(g.index++)), s |= (u > 0 ? 1 : 0) * p, p <<= 1;
+            l[h++] = r(s), c = h - 1, f--;
+            break;
+          case 1:
+            for (s = 0, a = Math.pow(2, 16), p = 1; p != a;) u = g.val & g.position, g.position >>= 1, 0 == g.position && (g.position = n, g.val = e(g.index++)), s |= (u > 0 ? 1 : 0) * p, p <<= 1;
+            l[h++] = r(s), c = h - 1, f--;
+            break;
+          case 2:
+            return v.join("")
+        }
+        if (0 == f && (f = Math.pow(2, d), d++), l[c]) m = l[c];
+        else {
+          if (c !== h) return null;
+          m = i + i.charAt(0)
+        }
+        v.push(m), l[h++] = i + m.charAt(0), i = m, 0 == --f && (f = Math.pow(2, d), d++)
+      }
+    }
+  };
+  return i
+}();
+"function" == typeof define && define.amd ? define(function() {
+  return LZString
+}) : "undefined" != typeof module && null != module ? module.exports = LZString : "undefined" != typeof angular && null != angular && angular.module("LZString", []).factory("LZString", function() {
+  return LZString
+});
+
+
+function clickiconshare() {
+  show_divcenter()
+  at00_iconshare.style.display = "block"
+
+
+  var data = saveJSON(2)
+
+
+  var url = window.location.href
+
+  if (url.startsWith("file://")) // local file, use github
+  {
+    url = "https://seb1k.github.io/EBIOS-RM-Graph/ebios-rm-graph.html"
+  }
+
+  at00_iconshare_link.value = url + "#autoload=" + data
+}
+
+function at00_iconshare_click() {
+  var elm = at00_iconshare_link
+  navigator.clipboard.writeText(elm.value)
+
+  elm.style.animation = "flash 300ms ease forwards";
+  setTimeout(() => {
+    elm.style.animation = "";
+  }, 300);
+
+  setTimeout(() => {
+    elm.style.animation = "";
+  }, 300);
+}
